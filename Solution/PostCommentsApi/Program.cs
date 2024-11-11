@@ -11,9 +11,23 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
 });
 
+// Add Scoped services for your PostService
 builder.Services.AddScoped<IPostService, PostService>();
+
+// Register Swagger UI for API documentation
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Configure CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000") // Replace with the origin of your frontend
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 // Configure MySQL with Entity Framework (Choose one of the below based on your preference)
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -35,7 +49,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// Enable CORS policy
+app.UseCors("AllowSpecificOrigin");
+
+// Enable HTTPS Redirection and Authorization middleware
 app.UseHttpsRedirection();
 app.UseAuthorization();
+
+// Map Controllers to handle requests
 app.MapControllers();
+
+// Start the application
 app.Run();

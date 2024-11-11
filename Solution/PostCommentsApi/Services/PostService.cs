@@ -31,18 +31,6 @@ namespace PostCommentsApi.Services
             return post;
         }
 
-        public async Task<Comment> AddCommentToPostAsync(int postId, Comment comment)
-        {
-            var post = await _context.Posts.FindAsync(postId);
-
-            if (post == null)
-                return null;
-
-            comment.PostId = postId;
-            _context.Comments.Add(comment);
-            await _context.SaveChangesAsync();
-
-            return comment;
-        }
+        
     }
 }

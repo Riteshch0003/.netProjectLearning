@@ -40,16 +40,6 @@ namespace PostCommentsApi.Controllers
             return CreatedAtAction(nameof(GetPost), new { id = createdPost.Id }, createdPost);
         }
 
-        [HttpPost("{postId}/comments")]
-        public async Task<ActionResult<Comment>> PostComment(int postId, Comment comment)
-        {
-            var createdComment = await _postService.AddCommentToPostAsync(postId, comment);
-
-            if (createdComment == null)
-                return NotFound(new { Message = "Post not found" });
-
-            // Return the created comment with proper route to get it by postId and comment Id
-            return CreatedAtAction(nameof(PostComment), new { postId = postId, id = createdComment.Id }, createdComment);
-        }
+       
     }
 }
