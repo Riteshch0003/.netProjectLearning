@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "or1z4T8nv9RsqEB+DLGrIHJntq/P+ySXtNGFlo+4BPo=",
+  "Source": "PostCommentsApi",
+  "BasePath": "_content/PostCommentsApi",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
