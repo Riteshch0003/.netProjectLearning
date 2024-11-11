@@ -1,22 +1,34 @@
 using Microsoft.EntityFrameworkCore;
-using PostCommentsApi.Data;
+using PostCommentsApi.Services;
+using System.Text.Json.Serialization;
+using PostCommentsApi.Data; // Add this if it's missing (for AppDbContext)
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container
-builder.Services.AddControllers();
+// Register services
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+});
 
-// Configure DbContext with the connection string
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// Add Swagger for API testing
+builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Configure MySQL with Entity Framework (Choose one of the below based on your preference)
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        new MySqlServerVersion(new Version(8, 0, 23)) // specify the MySQL version here
+    ));
+
+// OR, if you want to use an in-memory database (comment out the MySQL part and use the following):
+// builder.Services.AddDbContext<AppDbContext>(options =>
+//     options.UseInMemoryDatabase("PostCommentsDb"));
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Enable Swagger in development environment
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
