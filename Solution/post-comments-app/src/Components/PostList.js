@@ -11,16 +11,16 @@ function PostList() {
       .then(response => {
         console.log('API response:', response.data); // Log the response
 
-        // Check if response data is an array and filter out unnecessary fields
-        if (Array.isArray(response.data)) {
-          const filteredPosts = response.data.map(post => {
+        // Check if the response contains the expected structure
+        if (response.data && Array.isArray(response.data.$values)) {
+          const filteredPosts = response.data.$values.map(post => {
             // Create a new object without the `$id` field
             const { $id, ...postData } = post;
             return postData;
           });
           setPosts(filteredPosts);
         } else {
-          setError('Expected an array of posts, but got something else.');
+          setError('Expected an array of posts in $values, but got something else.');
         }
       })
       .catch(error => {

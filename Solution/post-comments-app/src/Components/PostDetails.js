@@ -3,58 +3,63 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
 function PostDetail() {
-  const { id } = useParams();
+  const { id } = useParams(); // Get the post ID from the URL using useParams
   const [post, setPost] = useState(null);
-  const [commentText, setCommentText] = useState('');
+  const [comments, setComments] = useState([]); // State for comments
+  const [error, setError] = useState(null);
 
   useEffect(() => {
+    // Fetch post data
     axios.get(`http://localhost:5041/api/PostComments/${id}`)
-      .then(response => setPost(response.data))
-      .catch(error => console.error(error));
-  }, [id]);
+      .then(response => {
+        console.log('API response:', response.data); // Log the response
 
-  const handleCommentSubmit = async (e) => {
-    e.preventDefault();
-    const newComment = {
-      postId: post.id,
-      commentText,
-      author: 'Anonymous',  // Add logic for author if needed
-    };
+        // Check if the post data exists
+        if (response.data) {
+          const { $id, comments, ...postData } = response.data; // Remove $id field
+          setPost(postData);
 
-    try {
-      const response = await axios.post(`http://localhost:5041/api/PostComments`, newComment);
-      setPost(prevPost => ({
-        ...prevPost,
-        comments: [...prevPost.comments, response.data]
-      }));
-      setCommentText('');
-    } catch (error) {
-      console.error(error);
-    }
-  };
+          // Check if comments is an object and has $values, then set the comments state
+          if (comments && Array.isArray(comments.$values)) {
+            setComments(comments.$values);
+          } else {
+            setComments([]); // In case no comments or invalid structure
+          }
+        } else {
+          setError('Post not found');
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching post:', error);
+        setError('Error fetching post');
+      });
+  }, [id]); // Re-fetch when the id changes
 
-  if (!post) return <div>Loading...</div>;
+  if (error) {
+    return <p>{error}</p>;
+  }
+
+  if (!post) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <div>
-      <h2>{post.title}</h2>
+      <h1>{post.title}</h1>
       <p>{post.body}</p>
 
-      <h3>Comments</h3>
-      <ul>
-        {post.comments.map((comment, index) => (
-          <li key={index}>{comment.commentText} - <em>{comment.author}</em></li>
-        ))}
-      </ul>
-
-      <form onSubmit={handleCommentSubmit}>
-        <textarea
-          value={commentText}
-          onChange={(e) => setCommentText(e.target.value)}
-          placeholder="Add a comment"
-        />
-        <button type="submit">Submit Comment</button>
-      </form>
+      <h2>Comments</h2>
+      {comments.length > 0 ? (
+        <ul>
+          {comments.map(comment => (
+            <li key={comment.id}>
+              <strong>{comment.author}</strong>: {comment.commentText}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>No comments available</p>
+      )}
     </div>
   );
 }
