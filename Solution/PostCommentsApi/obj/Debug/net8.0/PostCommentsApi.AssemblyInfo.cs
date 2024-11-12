@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PostCommentsApi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0d1ca9d48e0b70d7d7f6d0a104b50379f89be249")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2f93392aa011543afcadc5c8438dc8b9a7a180ee")]
 [assembly: System.Reflection.AssemblyProductAttribute("PostCommentsApi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PostCommentsApi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

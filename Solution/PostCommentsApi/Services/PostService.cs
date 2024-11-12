@@ -31,6 +31,19 @@ namespace PostCommentsApi.Services
             return post;
         }
 
-        
+        public async Task<Comment> CreateCommentAsync(Comment comment)
+        {
+        // Ensure the PostId exists in the database
+        var postExists = await _context.Posts.AnyAsync(p => p.Id == comment.PostId);
+        if (!postExists)
+        {
+            throw new Exception("Post not found.");
+        }
+
+        _context.Comments.Add(comment);
+        await _context.SaveChangesAsync();
+        return comment;
+    }
+  
     }
 }
