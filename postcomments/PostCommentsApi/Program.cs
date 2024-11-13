@@ -13,7 +13,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 
 // Register services in DI container
 builder.Services.AddScoped<IPostService, PostService>();
-builder.Services.AddScoped<ICommentService, CommentService>(); // Register the CommentService
+builder.Services.AddScoped<ICommentService, CommentService>(); 
 
 // Configure Swagger for API documentation
 builder.Services.AddEndpointsApiExplorer();

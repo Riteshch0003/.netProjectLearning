@@ -4,11 +4,16 @@ namespace PostCommentsApi.Models
     {
         public int Id { get; set; }
         public int PostId { get; set; }
-        public string CommentText { get; set; }
-        public string Author { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         
-       
-        public Post Post { get; set; }
+        [Required]
+    public string CommentText { get; set; }
+    
+    [Required]
+    public string Author { get; set; }
+    
+    public DateTime CreatedAt { get; set; }
+    
+    [Required]
+    public int PostId { get; set; }
     }
 }
