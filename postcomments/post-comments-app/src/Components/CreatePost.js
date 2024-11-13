@@ -9,10 +9,10 @@ const CreatePost = () => {
   const [comment, setComment] = useState({
     commentText: '',
     author: '',
-    createdAt: new Date().toISOString(),
   });
 
-  const [newPost, setNewPost] = useState(null);
+  // Initialize newPost with an empty comments array
+  const [newPost, setNewPost] = useState(null); // Updated to initialize as null for conditional rendering
 
   const handlePostInputChange = (e) => {
     const { name, value } = e.target;
@@ -25,65 +25,71 @@ const CreatePost = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    // Step 1: Create the post
-    const postResponse = await fetch('http://localhost:5041/api/PostComments', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(post),
-    });
-
-    if (!postResponse.ok) {
-      throw new Error('Error creating post');
-    }
-
-    const createdPost = await postResponse.json();
-    setNewPost({ ...createdPost, comments: createdPost.comments || [] });
-
-    // Step 2: Add comment to the created post
-    const commentData = {
-      commentText: comment.commentText,
-      author: comment.author,
-      postId: createdPost.id, // Make sure to use the actual postId
-      createdAt: comment.createdAt,
-    };
-
-    console.log('Sending comment data:', commentData); // Log the comment data being sent
-
-    const commentResponse = await fetch(
-      `http://localhost:5041/api/PostComments/${createdPost.id}/comments`,
-      {
+    try {
+      // Step 1: Create the post
+      const postResponse = await fetch('http://localhost:5041/api/PostComments', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(commentData),
+        body: JSON.stringify(post),
+      });
+
+      if (!postResponse.ok) {
+        throw new Error('Error creating post');
       }
-    );
 
-    if (!commentResponse.ok) {
-      const errorDetail = await commentResponse.json(); // Retrieve detailed error if available
-      console.error('Error adding comment to post:', errorDetail);
-      throw new Error('Error adding comment to post');
+      const createdPost = await postResponse.json();
+      setNewPost({ ...createdPost, comments: createdPost.comments || [] }); // Ensure comments is an array
+
+      // Step 2: Add comment to the created post
+      const commentData = {
+        commentText: comment.commentText,
+        author: comment.author,
+        postId: createdPost.id,
+        createdAt: new Date().toISOString(), // Setting createdAt dynamically
+      };
+
+      const commentResponse = await fetch(
+        `http://localhost:5041/api/PostComments/${createdPost.id}/comments`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(commentData),
+        }
+      );
+
+      if (!commentResponse.ok) {
+        const errorDetail = await commentResponse.json();
+        console.error('Error adding comment to post:', errorDetail);
+        throw new Error('Error adding comment to post');
+      }
+
+      const createdComment = await commentResponse.json();
+
+      // Refactor to simplify comment update and prevent iterable error
+      setNewPost((prevPost) => {
+        // Ensure prevPost.comments is an array
+        const comments = Array.isArray(prevPost.comments) ? prevPost.comments : [];
+        return {
+          ...prevPost,
+          comments: [...comments, createdComment],
+        };
+      });
+
+      alert('Post and comment created successfully');
+
+      // Optional: Clear form fields after submission
+      setPost({ title: '', body: '' });
+      setComment({ commentText: '', author: '' });
+    } catch (error) {
+      console.error('Error:', error);
     }
-
-    const createdComment = await commentResponse.json();
-
-    setNewPost((prevPost) => ({
-      ...prevPost,
-      comments: [...(prevPost.comments || []), createdComment],
-    }));
-
-    alert('Post and comment created successfully');
-  } catch (error) {
-    console.error('Error:', error);
-  }
-};
-
+  };
 
   return (
     <div>
@@ -132,24 +138,26 @@ const CreatePost = () => {
         <button type="submit">Create Post with Comment</button>
       </form>
 
+      {/* Display the post and comments after creation */}
       {newPost && (
         <div>
-          <h3>Post Created:</h3>
-          <p>ID: {newPost.id}</p>
-          <p>Title: {newPost.title}</p>
-          <p>Body: {newPost.body}</p>
-          <h4>Comments:</h4>
+          <h3>Created Post</h3>
+          <p><strong>Title:</strong> {newPost.title}</p>
+          <p><strong>Body:</strong> {newPost.body}</p>
+
+          <h4>Comments</h4>
           {newPost.comments.length > 0 ? (
-            newPost.comments.map((c, index) => (
-              <div key={index}>
-                <p>Comment ID: {c.id}</p>
-                <p>Text: {c.commentText}</p>
-                <p>Author: {c.author}</p>
-                <p>Created At: {c.createdAt}</p>
-              </div>
-            ))
+            <ul>
+              {newPost.comments.map((comment, index) => (
+                <li key={index}>
+                  <p><strong>Author:</strong> {comment.author}</p>
+                  <p><strong>Comment:</strong> {comment.commentText}</p>
+                  <p><strong>Created At:</strong> {new Date(comment.createdAt).toLocaleString()}</p>
+                </li>
+              ))}
+            </ul>
           ) : (
-            <p>No comments yet</p>
+            <p>No comments available.</p>
           )}
         </div>
       )}
