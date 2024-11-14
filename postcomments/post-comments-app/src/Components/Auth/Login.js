@@ -1,54 +1,86 @@
 import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-const LoginPage = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
+const Login = () => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState(null);
+    const [emailError, setEmailError] = useState('');
+    const [passwordError, setPasswordError] = useState('');
+    const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+    const validate = () => {
+        let isValid = true;
+        // Reset error messages
+        setEmailError('');
+        setPasswordError('');
 
-    try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      });
+        if (!email) {
+            setEmailError('Email is required');
+            isValid = false;
+        }
+        if (!password) {
+            setPasswordError('Password is required');
+            isValid = false;
+        }
 
-      const data = await response.json();
-      if (response.ok) {
-        setMessage('Login successful!');
-      } else {
-        setMessage(data.message || 'Login failed');
-      }
-    } catch (error) {
-      setMessage('An error occurred. Please try again later.');
-    }
-  };
+        return isValid;
+    };
 
-  return (
-    <div className="login-container">
-      <h2>Login</h2>
-      <form onSubmit={handleLogin}>
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        {message && <p>{message}</p>}
-        <button type="submit">Login</button>
-      </form>
-    </div>
-  );
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+
+        // Validate the inputs before making the request
+        if (!validate()) {
+            return;
+        }
+
+        try {
+            const response = await axios.post('http://localhost:5041/api/login', {
+                email,
+                password
+            });
+
+            const { postCommentId } = response.data;
+
+            navigate(`/PostComments/${postCommentId}`);
+        } catch (err) {
+            setError('Login failed. Please check your credentials.');
+        }
+    };
+
+    return (
+        <div style={{ maxWidth: '400px', margin: 'auto', padding: '1em' }}>
+            <h2>Login</h2>
+            <form onSubmit={handleSubmit}>
+                <div style={{ marginBottom: '1em' }}>
+                    <label>Email</label>
+                    <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        style={{ width: '100%', padding: '0.5em', marginTop: '0.5em' }}
+                    />
+                    {emailError && <p style={{ color: 'red' }}>{emailError}</p>}
+                </div>
+                <div style={{ marginBottom: '1em' }}>
+                    <label>Password</label>
+                    <input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        style={{ width: '100%', padding: '0.5em', marginTop: '0.5em' }}
+                    />
+                    {passwordError && <p style={{ color: 'red' }}>{passwordError}</p>}
+                </div>
+                {error && <p style={{ color: 'red' }}>{error}</p>}
+                <button type="submit" style={{ padding: '0.5em', width: '100%' }}>Login</button>
+            </form>
+        </div>
+    );
 };
 
-export default LoginPage;
+export default Login;
