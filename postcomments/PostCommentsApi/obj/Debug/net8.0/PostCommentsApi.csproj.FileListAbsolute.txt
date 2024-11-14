@@ -746,3 +746,4 @@ E:\AJ\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\runtimes
 E:\AJ\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\runtimes\win-x64\native\krbcc64.dll
 E:\AJ\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.Windows.Extensions.dll
 E:\AJ\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\Dapper.dll
+C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\Dapper.dll
