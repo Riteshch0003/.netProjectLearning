@@ -55,6 +55,13 @@ namespace PostCommentsApi.Controllers
             return CreatedAtAction(nameof(GetPost), new { id = createdPost.Id }, createdPost);
         }
 
+        [HttpGet("{postId}/comments")]
+        public async Task<ActionResult<IEnumerable<Comment>>> GetComments(int postId)
+        {
+            var comments = await _commentService.GetCommentsByPostIdAsync(postId);
+            return Ok(comments);
+        }
+
         [HttpPost("{postId}/comments")]
         public async Task<ActionResult<Comment>> AddComment(int postId, Comment comment)
         {
@@ -69,98 +76,50 @@ namespace PostCommentsApi.Controllers
             }
         }
 
-        [HttpGet("{postId}/comments")]
-        public async Task<ActionResult<IEnumerable<Comment>>> GetComments(int postId)
-        {
-            var comments = await _commentService.GetCommentsByPostIdAsync(postId);
-            return Ok(comments);
-        }
 
         [HttpPost("login")]
-        public async Task<ActionResult> Login([FromBody] LoginRequest loginRequest)
-        {
+         public async Task<ActionResult> Login([FromBody] LoginRequest loginRequest)
+         {
             var user = await _authService.AuthenticateAsync(loginRequest.Email, loginRequest.Password);
             if (user == null)
             {
                 return Unauthorized(new { message = "Invalid credentials" });
             }
-
-            HttpContext.Session.SetInt32("UserId", user.Id);
-
             return Ok(new { message = "Login successful" });
         }
- [HttpPost("register")]
-        public async Task<ActionResult<User>> Register([FromBody] RegisterRequest registerRequest)
-        {
-            if (string.IsNullOrEmpty(registerRequest.Email) || 
-                string.IsNullOrEmpty(registerRequest.Password) || 
-                string.IsNullOrEmpty(registerRequest.Username))
+
+
+        [HttpPost("register")]
+         public async Task<ActionResult> Register([FromBody] RegisterRequest registerRequest)
             {
-                return BadRequest("All fields are required.");
-            }
-
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                await connection.OpenAsync();
-
-                var checkEmailQuery = "SELECT COUNT(*) FROM Users WHERE Email = @Email";
-                var checkUsernameQuery = "SELECT COUNT(*) FROM Users WHERE Username = @Username";
-
-                using (var command = new MySqlCommand(checkEmailQuery, connection))
+                if (string.IsNullOrEmpty(registerRequest.Email) || 
+                    string.IsNullOrEmpty(registerRequest.Password) || 
+                    string.IsNullOrEmpty(registerRequest.Username))
                 {
-                    command.Parameters.AddWithValue("@Email", registerRequest.Email);
-                    var emailCount = Convert.ToInt32(await command.ExecuteScalarAsync());
-
-                    if (emailCount > 0)
-                    {
-                        return Conflict("Email is already taken.");
-                    }
+                    return BadRequest("All fields are required.");
                 }
-
-                using (var command = new MySqlCommand(checkUsernameQuery, connection))
+                try
                 {
-                    command.Parameters.AddWithValue("@Username", registerRequest.Username);
-                    var usernameCount = Convert.ToInt32(await command.ExecuteScalarAsync());
-
-                    if (usernameCount > 0)
-                    {
-                        return Conflict("Username is already taken.");
-                    }
+                    var newUser = await _authService.RegisterAsync(registerRequest.Username, registerRequest.Email, registerRequest.Password);
+                    return Ok(new { message = "User registered successfully", user = newUser });
+                }
+                catch (Exception ex)
+                {
+                    return Conflict(new { message = ex.Message }); 
                 }
             }
+         }
 
-            var passwordHash = BCrypt.Net.BCrypt.HashPassword(registerRequest.Password);
-
-            using (var connection = new MySqlConnection(_connectionString))
+            public class LoginRequest
             {
-                await connection.OpenAsync();
-
-                var insertQuery = "INSERT INTO Users (Username, Email, PasswordHash) VALUES (@Username, @Email, @PasswordHash)";
-                using (var command = new MySqlCommand(insertQuery, connection))
-                {
-                    command.Parameters.AddWithValue("@Username", registerRequest.Username);
-                    command.Parameters.AddWithValue("@Email", registerRequest.Email);
-                    command.Parameters.AddWithValue("@PasswordHash", passwordHash);
-
-                    await command.ExecuteNonQueryAsync();
-                }
+                public string Email { get; set; }
+                public string Password { get; set; }
             }
 
-            return Ok(new { message = "User registered successfully" });
+            public class RegisterRequest
+            {
+                public string Username { get; set; }
+                public string Email { get; set; }
+                public string Password { get; set; }
+            }
         }
-    }
-
-
-    public class LoginRequest
-    {
-        public string Email { get; set; }
-        public string Password { get; set; }
-    }
-
-    public class RegisterRequest
-    {
-        public string Username { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
-    }
-}
