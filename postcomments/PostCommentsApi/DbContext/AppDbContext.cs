@@ -3,13 +3,11 @@ using PostCommentsApi.Models;
 
 namespace PostCommentsApi.Data
 {
-    public class AppDbContext : DbContext
+    public class PostCommentsContext : DbContext
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options)
-            : base(options)
-        {
-        }
+        public PostCommentsContext(DbContextOptions<PostCommentsContext> options) : base(options) { }
 
+        public DbSet<User> Users { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<Comment> Comments { get; set; }
     }

@@ -1,4 +1,3 @@
-// Services/CommentService.cs
 using Microsoft.EntityFrameworkCore;
 using PostCommentsApi.Data;
 using PostCommentsApi.Models;
@@ -9,14 +8,13 @@ namespace PostCommentsApi.Services
 {
     public class CommentService : ICommentService
     {
-        private readonly AppDbContext _context;
+        private readonly PostCommentsContext _context;
 
-        public CommentService(AppDbContext context)
+        public CommentService(PostCommentsContext context)
         {
             _context = context;
         }
 
-        // Add a comment to a post
         public async Task<Comment> AddCommentAsync(int postId, Comment comment)
         {
             var post = await _context.Posts.FindAsync(postId);
@@ -31,7 +29,6 @@ namespace PostCommentsApi.Services
             return comment;
         }
 
-        // Get all comments for a specific post
         public async Task<IEnumerable<Comment>> GetCommentsByPostIdAsync(int postId)
         {
             return await _context.Comments

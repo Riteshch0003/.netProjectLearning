@@ -1,4 +1,3 @@
-// Services/ICommentService.cs
 using PostCommentsApi.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;

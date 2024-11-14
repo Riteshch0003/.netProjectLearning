@@ -12,14 +12,15 @@ namespace PostCommentsApi.Controllers
     {
         private readonly IPostService _postService;
         private readonly ICommentService _commentService;
+        private readonly IAuthService _authService;
 
-        public PostCommentsController(IPostService postService, ICommentService commentService)
+        public PostCommentsController(IPostService postService, ICommentService commentService, IAuthService AuthService)
         {
             _postService = postService;
             _commentService = commentService;
+            _authService = AuthService;
         }
 
-        // Get all posts
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Post>>> GetPosts()
         {
@@ -27,7 +28,6 @@ namespace PostCommentsApi.Controllers
             return Ok(posts);
         }
 
-        // Get a single post by ID
         [HttpGet("{id}")]
         public async Task<ActionResult<Post>> GetPost(int id)
         {
@@ -38,7 +38,6 @@ namespace PostCommentsApi.Controllers
             return Ok(post);
         }
 
-        // Create a new post
         [HttpPost]
         public async Task<ActionResult<Post>> PostPost([FromBody] Post post)
         {
@@ -46,13 +45,11 @@ namespace PostCommentsApi.Controllers
             return CreatedAtAction(nameof(GetPost), new { id = createdPost.Id }, createdPost);
         }
 
-        // Add a comment to a specific post
        [HttpPost("{postId}/comments")]
     public async Task<ActionResult<Comment>> AddComment(int postId, Comment comment)
     {
         try
         {
-            // Add the comment for the given postId
             var createdComment = await _commentService.AddCommentAsync(postId, comment);
             return CreatedAtAction(nameof(GetComments), new { postId = postId }, createdComment);
         }
@@ -62,12 +59,32 @@ namespace PostCommentsApi.Controllers
         }
     }
 
-    // Endpoint to get all comments for a specific post
     [HttpGet("{postId}/comments")]
     public async Task<ActionResult<IEnumerable<Comment>>> GetComments(int postId)
     {
         var comments = await _commentService.GetCommentsByPostIdAsync(postId);
         return Ok(comments);
     }
+// Login API endpoint
+        [HttpPost("login")]
+        public async Task<ActionResult> Login([FromBody] LoginRequest loginRequest)
+        {
+            var user = await _authService.AuthenticateAsync(loginRequest.Email, loginRequest.Password);
+            if (user == null)
+            {
+                return Unauthorized(new { message = "Invalid credentials" });
+            }
+
+            // Store user ID in session
+            HttpContext.Session.SetInt32("UserId", user.Id);
+
+            return Ok(new { message = "Login successful" });
+        }
+    }
+    public class LoginRequest
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+    }
 }
-}
+

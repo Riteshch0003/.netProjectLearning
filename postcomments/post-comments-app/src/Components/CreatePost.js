@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const CreatePost = () => {
+  const navigate = useNavigate();
+
   const [post, setPost] = useState({
     title: '',
     body: '',
@@ -11,8 +14,7 @@ const CreatePost = () => {
     author: '',
   });
 
-  // Initialize newPost with an empty comments array
-  const [newPost, setNewPost] = useState(null); // Updated to initialize as null for conditional rendering
+  const [newPost, setNewPost] = useState(null); 
 
   const handlePostInputChange = (e) => {
     const { name, value } = e.target;
@@ -28,7 +30,6 @@ const CreatePost = () => {
     e.preventDefault();
 
     try {
-      // Step 1: Create the post
       const postResponse = await fetch('http://localhost:5041/api/PostComments', {
         method: 'POST',
         headers: {
@@ -42,14 +43,13 @@ const CreatePost = () => {
       }
 
       const createdPost = await postResponse.json();
-      setNewPost({ ...createdPost, comments: createdPost.comments || [] }); // Ensure comments is an array
+      setNewPost({ ...createdPost, comments: createdPost.comments || [] }); 
 
-      // Step 2: Add comment to the created post
       const commentData = {
         commentText: comment.commentText,
         author: comment.author,
         postId: createdPost.id,
-        createdAt: new Date().toISOString(), // Setting createdAt dynamically
+        createdAt: new Date().toISOString(), 
       };
 
       const commentResponse = await fetch(
@@ -71,9 +71,7 @@ const CreatePost = () => {
 
       const createdComment = await commentResponse.json();
 
-      // Refactor to simplify comment update and prevent iterable error
       setNewPost((prevPost) => {
-        // Ensure prevPost.comments is an array
         const comments = Array.isArray(prevPost.comments) ? prevPost.comments : [];
         return {
           ...prevPost,
@@ -82,8 +80,8 @@ const CreatePost = () => {
       });
 
       alert('Post and comment created successfully');
+            navigate('/');
 
-      // Optional: Clear form fields after submission
       setPost({ title: '', body: '' });
       setComment({ commentText: '', author: '' });
     } catch (error) {
@@ -138,7 +136,6 @@ const CreatePost = () => {
         <button type="submit">Create Post with Comment</button>
       </form>
 
-      {/* Display the post and comments after creation */}
       {newPost && (
         <div>
           <h3>Created Post</h3>

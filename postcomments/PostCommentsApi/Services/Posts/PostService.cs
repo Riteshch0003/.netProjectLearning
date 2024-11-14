@@ -6,9 +6,9 @@ namespace PostCommentsApi.Services
 {
     public class PostService : IPostService
     {
-        private readonly AppDbContext _context;
+        private readonly PostCommentsContext _context;
 
-        public PostService(AppDbContext context)
+        public PostService(PostCommentsContext context)
         {
             _context = context;
         }
