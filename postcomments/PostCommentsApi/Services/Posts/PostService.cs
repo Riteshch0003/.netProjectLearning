@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using PostCommentsApi.Data;
 using PostCommentsApi.Models;
+using MySql.Data.MySqlClient;
+
 
 namespace PostCommentsApi.Services
 {

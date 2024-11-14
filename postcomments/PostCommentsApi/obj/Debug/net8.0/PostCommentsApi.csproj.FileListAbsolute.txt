@@ -622,7 +622,6 @@ C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\Microsoft.I
 C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
 C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\Microsoft.OpenApi.dll
 C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\Microsoft.SqlServer.Server.dll
-C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\Microsoft.Win32.SystemEvents.dll
 C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\Mono.TextTemplating.dll
 C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\MySqlConnector.dll
 C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\Pomelo.EntityFrameworkCore.MySql.dll
@@ -636,7 +635,6 @@ C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\System.Comp
 C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\System.Composition.Runtime.dll
 C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\System.Composition.TypedParts.dll
 C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\System.Configuration.ConfigurationManager.dll
-C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\System.Drawing.Common.dll
 C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll
 C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\System.Memory.Data.dll
 C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\System.Runtime.Caching.dll
@@ -701,12 +699,7 @@ C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\runtimes\wi
 C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\runtimes\win-arm64\native\Microsoft.Data.SqlClient.SNI.dll
 C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\runtimes\win-x64\native\Microsoft.Data.SqlClient.SNI.dll
 C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.dll
-C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\runtimes\win\lib\net6.0\Microsoft.Win32.SystemEvents.dll
-C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\runtimes\unix\lib\net6.0\System.Drawing.Common.dll
-C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll
 C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Runtime.Caching.dll
-C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
-C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
 C:\.netProjectLearning\postcomments\PostCommentsApi\obj\Debug\net8.0\PostCommentsApi.csproj.AssemblyReference.cache
 C:\.netProjectLearning\postcomments\PostCommentsApi\obj\Debug\net8.0\PostCommentsApi.GeneratedMSBuildEditorConfig.editorconfig
 C:\.netProjectLearning\postcomments\PostCommentsApi\obj\Debug\net8.0\PostCommentsApi.AssemblyInfoInputs.cache
@@ -730,3 +723,18 @@ C:\.netProjectLearning\postcomments\PostCommentsApi\obj\Debug\net8.0\PostComment
 C:\.netProjectLearning\postcomments\PostCommentsApi\obj\Debug\net8.0\PostCommentsApi.genruntimeconfig.cache
 C:\.netProjectLearning\postcomments\PostCommentsApi\obj\Debug\net8.0\ref\PostCommentsApi.dll
 C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\BCrypt.Net-Next.dll
+C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\BouncyCastle.Cryptography.dll
+C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\Google.Protobuf.dll
+C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\K4os.Compression.LZ4.dll
+C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\K4os.Compression.LZ4.Streams.dll
+C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\K4os.Hash.xxHash.dll
+C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\MySql.Data.dll
+C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\System.Diagnostics.DiagnosticSource.dll
+C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\System.Text.Json.dll
+C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\ZstdSharp.dll
+C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\runtimes\win-x64\native\comerr64.dll
+C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\runtimes\win-x64\native\gssapi64.dll
+C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\runtimes\win-x64\native\k5sprt64.dll
+C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\runtimes\win-x64\native\krb5_64.dll
+C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\runtimes\win-x64\native\krbcc64.dll
+C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.Windows.Extensions.dll
