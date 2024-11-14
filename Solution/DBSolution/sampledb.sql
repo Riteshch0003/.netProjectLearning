@@ -1,14 +1,12 @@
 -- Insert sample data into Users table
 
-INSERT INTO Users (Username, PasswordHash, Email) VALUES
-('Alice', 'hashed_password_1', 'alice@example.com'),
-('Bob', 'hashed_password_2', 'bob@example.com'),
-('Charlie', 'hashed_password_3', 'charlie@example.com'),
-('Daisy', 'hashed_password_4', 'daisy@example.com'),
-('Edward', 'hashed_password_5', 'edward@example.com'),
-('Fiona', 'hashed_password_6', 'fiona@example.com');
-
-
+INSERT INTO Users (Username, Password, Email) VALUES
+('Alice', 'password_1', 'alice@example.com'),
+('Bob', 'password_2', 'bob@example.com'),
+('Charlie', 'password_3', 'charlie@example.com'),
+('Daisy', 'password_4', 'daisy@example.com'),
+('Edward', 'password_5', 'edward@example.com'),
+('Fiona', 'password_6', 'fiona@example.com');
 
 
 INSERT INTO Posts (Title, Content, UserId) VALUES
