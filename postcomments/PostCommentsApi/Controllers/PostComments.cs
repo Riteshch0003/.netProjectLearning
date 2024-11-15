@@ -104,6 +104,8 @@ namespace PostCommentsApi.Controllers
                 return Conflict(new { message = ex.Message });
             }
         }
+
+
         [HttpGet("user/{userId}")]
         public async Task<ActionResult> GetPostsWithUserComments(int userId)
         {
@@ -137,6 +139,7 @@ namespace PostCommentsApi.Controllers
             return Ok(response);
         }
     }
+
 
     public class LoginRequest
     {

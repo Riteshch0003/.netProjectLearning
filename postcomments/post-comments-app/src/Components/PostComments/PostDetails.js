@@ -3,25 +3,24 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
 function PostDetail() {
-  const { id } = useParams(); 
+  const { id } = useParams();
   const [post, setPost] = useState(null);
-  const [comments, setComments] = useState([]); 
+  const [comments, setComments] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     axios.get(`http://localhost:5041/api/PostComments/${id}`)
       .then(response => {
-        console.log('API response:', response.data); 
+        console.log('API response:', response.data);
 
-        
         if (response.data) {
-          const { $id, comments, ...postData } = response.data; 
-          setPost(postData);
+          const { $id, comments, ...postData } = response.data;
+          setPost(postData);  // Set post details
 
-          if (comments && Array.isArray(comments.$values)) {
-            setComments(comments.$values);
+          if (comments && comments.$values && Array.isArray(comments.$values)) {
+            setComments(comments.$values); 
           } else {
-            setComments([]); 
+            setComments([]);  
           }
         } else {
           setError('Post not found');
@@ -44,14 +43,14 @@ function PostDetail() {
   return (
     <div>
       <h1>{post.title}</h1>
-      <p>{post.body}</p>
+      <p>{post.content}</p>
 
       <h2>Comments</h2>
       {comments.length > 0 ? (
         <ul>
           {comments.map(comment => (
             <li key={comment.id}>
-              <strong>{comment.author}</strong>: {comment.commentText}
+              <strong>{comment.author}</strong>: {comment.content} 
             </li>
           ))}
         </ul>
