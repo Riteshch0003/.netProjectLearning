@@ -14,19 +14,18 @@ namespace PostCommentsApi.Services
         {
             _context = context;
         }
-        public async Task<User> AuthenticateAsync(string email, string password)
-        {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-            if (user == null)
-            {
-                return null; 
-            }
-            if (user.Password != password) 
-            {
-                return null; 
-            }
-            return user;
-        }
+
+      public async Task<User> AuthenticateAsync(string email, string password)
+{
+    var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+    if (user == null || user.Password != password) 
+    {
+        return null;
+    }
+
+    return user;
+}
+
 
 
         public async Task<User> RegisterAsync(string username, string email, string password)

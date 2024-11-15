@@ -39,11 +39,15 @@ const Login = () => {
         try {
             const response = await axios.post('http://localhost:5041/api/PostComments/login', {
                 email,
-                password
+                password,
             });
 
-            const { postCommentId } = response.data;
+            const { userId } = response.data; // Assuming the API returns userId on successful login
 
+            // Store userId in localStorage for later use
+            localStorage.setItem('userId', userId);
+
+            // Navigate to the PostList page
             navigate(`/PostList`);
         } catch (err) {
             setError('Login failed. Please check your credentials.');

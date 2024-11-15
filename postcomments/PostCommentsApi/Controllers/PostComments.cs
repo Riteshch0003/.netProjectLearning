@@ -73,16 +73,19 @@ namespace PostCommentsApi.Controllers
             }
         }
 
-        [HttpPost("login")]
-        public async Task<ActionResult> Login([FromBody] LoginRequest loginRequest)
-        {
-            var user = await _authService.AuthenticateAsync(loginRequest.Email, loginRequest.Password);
-            if (user == null)
-            {
-                return Unauthorized(new { message = "Invalid credentials" });
-            }
-            return Ok(new { message = "Login successful" });
-        }
+      [HttpPost("login")]
+public async Task<ActionResult> Login([FromBody] LoginRequest loginRequest)
+{
+    var user = await _authService.AuthenticateAsync(loginRequest.Email, loginRequest.Password);
+    if (user == null)
+    {
+        return Unauthorized(new { message = "Invalid credentials" });
+    }
+
+    // Return the userId along with a success message
+    return Ok(new { userId = user.Id, message = "Login successful" });
+}
+
 
         [HttpPost("register")]
         public async Task<ActionResult> Register([FromBody] RegisterRequest registerRequest)
