@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http; 
 using PostCommentsApi.Models;
 using PostCommentsApi.Services;
 using PostCommentsApi.Data;
@@ -9,7 +8,6 @@ using System.Threading.Tasks;
 using BCrypt.Net;
 using MySql.Data.MySqlClient;
 
-
 namespace PostCommentsApi.Controllers
 {
     [Route("api/[controller]")]
@@ -17,13 +15,12 @@ namespace PostCommentsApi.Controllers
     public class PostCommentsController : ControllerBase
     {
         private readonly string _connectionString;
-
         private readonly PostCommentsContext _context;
         private readonly IPostService _postService;
         private readonly ICommentService _commentService;
         private readonly IAuthService _authService;
 
-        public PostCommentsController(PostCommentsContext  context, IPostService postService, ICommentService commentService, IAuthService authService)
+        public PostCommentsController(PostCommentsContext context, IPostService postService, ICommentService commentService, IAuthService authService)
         {
             _context = context;
             _postService = postService;
@@ -76,10 +73,9 @@ namespace PostCommentsApi.Controllers
             }
         }
 
-
         [HttpPost("login")]
-         public async Task<ActionResult> Login([FromBody] LoginRequest loginRequest)
-         {
+        public async Task<ActionResult> Login([FromBody] LoginRequest loginRequest)
+        {
             var user = await _authService.AuthenticateAsync(loginRequest.Email, loginRequest.Password);
             if (user == null)
             {
@@ -88,38 +84,71 @@ namespace PostCommentsApi.Controllers
             return Ok(new { message = "Login successful" });
         }
 
-
+        // Register method for new users
         [HttpPost("register")]
-         public async Task<ActionResult> Register([FromBody] RegisterRequest registerRequest)
+        public async Task<ActionResult> Register([FromBody] RegisterRequest registerRequest)
+        {
+            if (string.IsNullOrEmpty(registerRequest.Email) || 
+                string.IsNullOrEmpty(registerRequest.Password) || 
+                string.IsNullOrEmpty(registerRequest.Username))
             {
-                if (string.IsNullOrEmpty(registerRequest.Email) || 
-                    string.IsNullOrEmpty(registerRequest.Password) || 
-                    string.IsNullOrEmpty(registerRequest.Username))
-                {
-                    return BadRequest("All fields are required.");
-                }
-                try
-                {
-                    var newUser = await _authService.RegisterAsync(registerRequest.Username, registerRequest.Email, registerRequest.Password);
-                    return Ok(new { message = "User registered successfully", user = newUser });
-                }
-                catch (Exception ex)
-                {
-                    return Conflict(new { message = ex.Message }); 
-                }
-            }
-         }
-
-            public class LoginRequest
-            {
-                public string Email { get; set; }
-                public string Password { get; set; }
+                return BadRequest("All fields are required.");
             }
 
-            public class RegisterRequest
+            try
             {
-                public string Username { get; set; }
-                public string Email { get; set; }
-                public string Password { get; set; }
+                var newUser = await _authService.RegisterAsync(registerRequest.Username, registerRequest.Email, registerRequest.Password);
+                return Ok(new { message = "User registered successfully", user = newUser });
+            }
+            catch (Exception ex)
+            {
+                return Conflict(new { message = ex.Message });
             }
         }
+        [HttpGet("user/{userId}")]
+        public async Task<ActionResult> GetPostsWithUserComments(int userId)
+        {
+            var posts = await _postService.GetPostsByUserIdAsync(userId);
+            if (posts == null || !posts.Any())
+                return NotFound("No posts found for this user.");
+
+            var response = new List<object>();
+
+            foreach (var post in posts)
+            {
+                var comments = await _commentService.GetCommentsByUserIdAsync(userId);
+                var userComments = comments.Where(c => c.UserId == userId).ToList();
+
+                response.Add(new
+                {
+                    Id = post.Id,
+                    Title = post.Title,
+                    Content = post.Content,
+                    Comments = userComments.Select(c => new
+                    {
+                        Id = c.Id,
+                        Author = c.Author,
+                        Content = c.Content,
+                        UserId = c.UserId,
+                        PostId = c.PostId
+                    })
+                });
+            }
+
+            return Ok(response);
+        }
+    }
+
+    public class LoginRequest
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+    }
+
+    public class RegisterRequest
+    {
+        public string Username { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
+    }
+}

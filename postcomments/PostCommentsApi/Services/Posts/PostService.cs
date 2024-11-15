@@ -25,6 +25,12 @@ namespace PostCommentsApi.Services
             return await _context.Posts.Include(p => p.Comments)
                                        .FirstOrDefaultAsync(p => p.Id == id);
         }
+        public async Task<IEnumerable<Post>> GetPostsByUserIdAsync(int userId)
+        {
+            // Fetch posts by the userId
+            var posts = _context.Posts.Where(p => p.UserId == userId).ToList();
+            return await Task.FromResult(posts);
+        }
 
         public async Task<Post> CreatePostAsync(Post post)
         {

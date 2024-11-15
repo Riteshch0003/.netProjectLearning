@@ -36,5 +36,10 @@ namespace PostCommentsApi.Services
                                  .Where(c => c.PostId == postId)
                                  .ToListAsync();
         }
+        public async Task<IEnumerable<Comment>>GetCommentsByUserIdAsync(int userId){
+            return await _context.Comments
+            .Where(c=>c.UserId == userId)
+            .ToListAsync();
+        }
     }
 }
