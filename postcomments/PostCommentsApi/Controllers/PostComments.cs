@@ -52,6 +52,23 @@ namespace PostCommentsApi.Controllers
             return CreatedAtAction(nameof(GetPost), new { id = createdPost.Id }, createdPost);
         }
 
+     [HttpPost("user/{userId}")]
+public async Task<ActionResult<Post>> AddPost(int userId, [FromBody] Post post)
+{
+    if (post == null || string.IsNullOrWhiteSpace(post.Title) || string.IsNullOrWhiteSpace(post.Content))
+    {
+        return BadRequest("Post title and content are required.");
+    }
+
+    post.UserId = userId;
+
+    _context.Posts.Add(post);
+    await _context.SaveChangesAsync();
+
+    return CreatedAtAction(nameof(GetPost), new { id = post.Id }, post);
+}
+
+
         [HttpGet("{postId}/comments")]
         public async Task<ActionResult<IEnumerable<Comment>>> GetComments(int postId)
         {

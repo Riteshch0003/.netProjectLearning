@@ -18,12 +18,10 @@ function PostList() {
       .then(response => {
         console.log('API Response:', response.data); // Debug the response structure
 
-        // Check if response has $values at the top level (array of posts)
         if (response.data && Array.isArray(response.data.$values)) {
           const filteredPosts = response.data.$values.map(post => {
             const { $id, comments, ...postData } = post;
 
-            // If comments are present and have $values, extract them as an array
             const postComments = comments && comments.$values
               ? comments.$values.map(comment => {
                   const { $id, ...commentData } = comment;

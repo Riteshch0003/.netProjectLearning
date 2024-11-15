@@ -32,6 +32,14 @@ namespace PostCommentsApi.Services
             return await Task.FromResult(posts);
         }
 
+        public async Task<Post> AddPost(int userId, Post post)
+        {
+           _context.Posts.Add(post);
+            await _context.SaveChangesAsync();
+
+            return post; 
+        }
+
         public async Task<Post> CreatePostAsync(Post post)
         {
             _context.Posts.Add(post);

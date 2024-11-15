@@ -12,7 +12,6 @@ const Login = () => {
 
     const validate = () => {
         let isValid = true;
-        // Reset error messages
         setEmailError('');
         setPasswordError('');
 
@@ -31,7 +30,6 @@ const Login = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        // Validate the inputs before making the request
         if (!validate()) {
             return;
         }
@@ -44,10 +42,8 @@ const Login = () => {
 
             const { userId } = response.data; // Assuming the API returns userId on successful login
 
-            // Store userId in localStorage for later use
             localStorage.setItem('userId', userId);
 
-            // Navigate to the PostList page
             navigate(`/PostList`);
         } catch (err) {
             setError('Login failed. Please check your credentials.');
