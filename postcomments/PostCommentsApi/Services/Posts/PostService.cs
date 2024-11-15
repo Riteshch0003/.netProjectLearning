@@ -68,27 +68,34 @@ namespace PostCommentsApi.Services
             await _context.SaveChangesAsync();
             return post;
         }
-         public async Task<Post> UpdatePostAsync(int userId, int postId, Post updatedPost)
+
+        public async Task<Post> UpdatePostAsync(int userId, int postId, UpdatePostDto updatedPostDto)
+{
+    if (updatedPostDto == null || string.IsNullOrWhiteSpace(updatedPostDto.Title) || string.IsNullOrWhiteSpace(updatedPostDto.Content))
     {
-        if (updatedPost == null || string.IsNullOrWhiteSpace(updatedPost.Title) || string.IsNullOrWhiteSpace(updatedPost.Content))
-        {
-            throw new ArgumentException("Post title and content are required.");
-        }
+        throw new ArgumentException("Post title and content are required.");
+    }
 
-        var existingPost = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId && p.UserId == userId);
-        if (existingPost == null)
-        {
-            throw new KeyNotFoundException($"Post with ID {postId} for User ID {userId} not found.");
-        }
+    var existingPost = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId && p.UserId == userId);
+    if (existingPost == null)
+    {
+        throw new KeyNotFoundException($"Post with ID {postId} for User ID {userId} not found.");
+    }
 
-        // Update post properties
-        existingPost.Title = updatedPost.Title;
-        existingPost.Content = updatedPost.Content;
+    // Update post properties
+    existingPost.Title = updatedPostDto.Title;
+    existingPost.Content = updatedPostDto.Content;
 
+    try
+    {
         await _context.SaveChangesAsync(); // Save changes to the database
         return existingPost;
     }
-
-        
+    catch (Exception ex)
+    {
+        // Log the exception (use a logger)
+        throw new Exception("An error occurred while updating the post.", ex);
+    }
+}
     }
 }

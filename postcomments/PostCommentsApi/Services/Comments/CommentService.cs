@@ -41,24 +41,35 @@ namespace PostCommentsApi.Services
             .Where(c=>c.UserId == userId)
             .ToListAsync();
         }
-public async Task<Comment> UpdateCommentAsync(int postId, int commentId, Comment updatedComment)
+
+
+public async Task<Comment> UpdateCommentAsync(int postId, int commentId, UpdateCommentDto updatedCommentDto)
+{
+    if (updatedCommentDto == null || string.IsNullOrWhiteSpace(updatedCommentDto.Content))
     {
-        if (updatedComment == null || string.IsNullOrWhiteSpace(updatedComment.Content))
-        {
-            throw new ArgumentException("Comment content is required.");
-        }
+        throw new ArgumentException("Comment content is required.");
+    }
 
-        var existingComment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == commentId && c.PostId == postId);
-        if (existingComment == null)
-        {
-            throw new KeyNotFoundException($"Comment with ID {commentId} for Post ID {postId} not found.");
-        }
+    var existingComment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == commentId && c.PostId == postId);
+    if (existingComment == null)
+    {
+        throw new KeyNotFoundException($"Comment with ID {commentId} for Post ID {postId} not found.");
+    }
 
-        // Update comment properties
-        existingComment.Content = updatedComment.Content;
+    // Update comment properties
+    existingComment.Content = updatedCommentDto.Content;
 
+    try
+    {
         await _context.SaveChangesAsync(); // Save changes to the database
         return existingComment;
     }
+    catch (Exception ex)
+    {
+        // Log the exception (use a logger)
+        throw new Exception("An error occurred while updating the comment.", ex);
     }
+}
+
+}
 }

@@ -179,10 +179,11 @@ public async Task<ActionResult> Login([FromBody] LoginRequest loginRequest)
 
             return Ok(response);
         }
-        [HttpPut("user/{userId}/post/{postId}")]
-public async Task<ActionResult<Post>> EditPost(int userId, int postId, [FromBody] Post updatedPost)
+
+    [HttpPut("user/{userId}/post/{postId}")]
+public async Task<ActionResult<Post>> EditPost(int userId, int postId, [FromBody] UpdatePostDto updatedPostDto)
 {
-    if (updatedPost == null || string.IsNullOrWhiteSpace(updatedPost.Title) || string.IsNullOrWhiteSpace(updatedPost.Content))
+    if (updatedPostDto == null || string.IsNullOrWhiteSpace(updatedPostDto.Title) || string.IsNullOrWhiteSpace(updatedPostDto.Content))
     {
         return BadRequest("Post title and content are required.");
     }
@@ -195,8 +196,8 @@ public async Task<ActionResult<Post>> EditPost(int userId, int postId, [FromBody
     }
 
     // Update post details
-    existingPost.Title = updatedPost.Title;
-    existingPost.Content = updatedPost.Content;
+    existingPost.Title = updatedPostDto.Title;
+    existingPost.Content = updatedPostDto.Content;
 
     try
     {
@@ -209,10 +210,11 @@ public async Task<ActionResult<Post>> EditPost(int userId, int postId, [FromBody
         return StatusCode(500, "An error occurred while updating the post.");
     }
 }
+
 [HttpPut("post/{postId}/comments/{commentId}")]
-public async Task<ActionResult<Comment>> EditComment(int postId, int commentId, [FromBody] Comment updatedComment)
+public async Task<ActionResult<Comment>> EditComment(int postId, int commentId, [FromBody] UpdateCommentDto updatedCommentDto)
 {
-    if (updatedComment == null || string.IsNullOrWhiteSpace(updatedComment.Content))
+    if (updatedCommentDto == null || string.IsNullOrWhiteSpace(updatedCommentDto.Content))
     {
         return BadRequest("Comment content is required.");
     }
@@ -225,7 +227,7 @@ public async Task<ActionResult<Comment>> EditComment(int postId, int commentId, 
     }
 
     // Update comment details
-    existingComment.Content = updatedComment.Content;
+    existingComment.Content = updatedCommentDto.Content;
 
     try
     {
@@ -238,10 +240,7 @@ public async Task<ActionResult<Comment>> EditComment(int postId, int commentId, 
         return StatusCode(500, "An error occurred while updating the comment.");
     }
 }
-
     }
-    
-
 
     public class LoginRequest
     {
