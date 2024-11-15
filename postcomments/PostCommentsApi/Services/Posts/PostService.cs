@@ -68,6 +68,26 @@ namespace PostCommentsApi.Services
             await _context.SaveChangesAsync();
             return post;
         }
+         public async Task<Post> UpdatePostAsync(int userId, int postId, Post updatedPost)
+    {
+        if (updatedPost == null || string.IsNullOrWhiteSpace(updatedPost.Title) || string.IsNullOrWhiteSpace(updatedPost.Content))
+        {
+            throw new ArgumentException("Post title and content are required.");
+        }
+
+        var existingPost = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId && p.UserId == userId);
+        if (existingPost == null)
+        {
+            throw new KeyNotFoundException($"Post with ID {postId} for User ID {userId} not found.");
+        }
+
+        // Update post properties
+        existingPost.Title = updatedPost.Title;
+        existingPost.Content = updatedPost.Content;
+
+        await _context.SaveChangesAsync(); // Save changes to the database
+        return existingPost;
+    }
 
         
     }

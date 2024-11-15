@@ -8,5 +8,6 @@ namespace PostCommentsApi.Services
         Task<Post> CreatePostAsync(Post post);
         Task<IEnumerable<Post>> GetPostsByUserIdAsync(int userId);
         Task<Post> AddPost(int userId, Post post);
+        Task<Post> UpdatePostAsync(int userId, int postId, Post updatedPost);
     }
 }

@@ -41,5 +41,24 @@ namespace PostCommentsApi.Services
             .Where(c=>c.UserId == userId)
             .ToListAsync();
         }
+public async Task<Comment> UpdateCommentAsync(int postId, int commentId, Comment updatedComment)
+    {
+        if (updatedComment == null || string.IsNullOrWhiteSpace(updatedComment.Content))
+        {
+            throw new ArgumentException("Comment content is required.");
+        }
+
+        var existingComment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == commentId && c.PostId == postId);
+        if (existingComment == null)
+        {
+            throw new KeyNotFoundException($"Comment with ID {commentId} for Post ID {postId} not found.");
+        }
+
+        // Update comment properties
+        existingComment.Content = updatedComment.Content;
+
+        await _context.SaveChangesAsync(); // Save changes to the database
+        return existingComment;
+    }
     }
 }

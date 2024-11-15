@@ -747,3 +747,5 @@ E:\AJ\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\runtimes
 E:\AJ\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.Windows.Extensions.dll
 E:\AJ\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\Dapper.dll
 C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\Dapper.dll
+C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\Microsoft.Extensions.Caching.Abstractions.dll
+C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\Microsoft.Extensions.Primitives.dll

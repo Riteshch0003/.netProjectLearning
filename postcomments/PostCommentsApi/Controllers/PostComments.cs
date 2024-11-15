@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using PostCommentsApi.Models;
 using PostCommentsApi.Services;
 using PostCommentsApi.Data;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -84,7 +85,6 @@ public async Task<ActionResult<Post>> AddPost(int userId, [FromBody] PostCreateD
 [HttpPost("{postId}/comments")]
 public async Task<ActionResult<Comment>> AddComment(int postId, [FromBody] CommentCreateDto commentDto)
 {
-    // Validate the comment content and author
     if (string.IsNullOrWhiteSpace(commentDto.Content) || string.IsNullOrWhiteSpace(commentDto.Author))
     {
         return BadRequest(new { error = "Content and author are required." });
@@ -179,7 +179,68 @@ public async Task<ActionResult> Login([FromBody] LoginRequest loginRequest)
 
             return Ok(response);
         }
+        [HttpPut("user/{userId}/post/{postId}")]
+public async Task<ActionResult<Post>> EditPost(int userId, int postId, [FromBody] Post updatedPost)
+{
+    if (updatedPost == null || string.IsNullOrWhiteSpace(updatedPost.Title) || string.IsNullOrWhiteSpace(updatedPost.Content))
+    {
+        return BadRequest("Post title and content are required.");
     }
+
+    // Find the post and validate the user
+    var existingPost = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId && p.UserId == userId);
+    if (existingPost == null)
+    {
+        return NotFound($"Post with ID {postId} for User ID {userId} not found.");
+    }
+
+    // Update post details
+    existingPost.Title = updatedPost.Title;
+    existingPost.Content = updatedPost.Content;
+
+    try
+    {
+        await _context.SaveChangesAsync();
+        return Ok(existingPost);
+    }
+    catch (Exception ex)
+    {
+        // Log the exception
+        return StatusCode(500, "An error occurred while updating the post.");
+    }
+}
+[HttpPut("post/{postId}/comments/{commentId}")]
+public async Task<ActionResult<Comment>> EditComment(int postId, int commentId, [FromBody] Comment updatedComment)
+{
+    if (updatedComment == null || string.IsNullOrWhiteSpace(updatedComment.Content))
+    {
+        return BadRequest("Comment content is required.");
+    }
+
+    // Find the comment and validate it belongs to the specified post
+    var existingComment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == commentId && c.PostId == postId);
+    if (existingComment == null)
+    {
+        return NotFound($"Comment with ID {commentId} for Post ID {postId} not found.");
+    }
+
+    // Update comment details
+    existingComment.Content = updatedComment.Content;
+
+    try
+    {
+        await _context.SaveChangesAsync();
+        return Ok(existingComment);
+    }
+    catch (Exception ex)
+    {
+        // Log the exception
+        return StatusCode(500, "An error occurred while updating the comment.");
+    }
+}
+
+    }
+    
 
 
     public class LoginRequest
