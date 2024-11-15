@@ -7,6 +7,7 @@ const CreatePost = () => {
   const [post, setPost] = useState({
     title: '',
     body: '',
+    userId: '', // New field for userId
   });
 
   const [comment, setComment] = useState({
@@ -14,7 +15,7 @@ const CreatePost = () => {
     author: '',
   });
 
-  const [newPost, setNewPost] = useState(null); 
+  const [newPost, setNewPost] = useState(null); // Holds the created post and comment
 
   const handlePostInputChange = (e) => {
     const { name, value } = e.target;
@@ -30,26 +31,35 @@ const CreatePost = () => {
     e.preventDefault();
 
     try {
-      const postResponse = await fetch('http://localhost:5041/api/PostComments', {
+      // Create Post request
+      const postResponse = await fetch(`http://localhost:5041/api/PostComments/user/${post.userId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(post),
+        body: JSON.stringify({
+          Title: post.title,
+          Content: post.body,
+          UserId: post.userId, // Sending userId along with post
+        }),
       });
 
       if (!postResponse.ok) {
+        const errorDetail = await postResponse.json();
+        console.error('Error creating post:', errorDetail);
+        alert('Error creating post: ' + JSON.stringify(errorDetail.errors || 'Unknown error'));
         throw new Error('Error creating post');
       }
 
       const createdPost = await postResponse.json();
-      setNewPost({ ...createdPost, comments: createdPost.comments || [] }); 
+      setNewPost({ ...createdPost, comments: createdPost.comments || [] });
 
+      // Create Comment request
       const commentData = {
-        commentText: comment.commentText,
-        author: comment.author,
-        postId: createdPost.id,
-        createdAt: new Date().toISOString(), 
+        Content: comment.commentText, // Send the comment content
+        Author: comment.author,
+        PostId: createdPost.id,
+        UserId: post.userId, // Include UserId here as well
       };
 
       const commentResponse = await fetch(
@@ -66,11 +76,11 @@ const CreatePost = () => {
       if (!commentResponse.ok) {
         const errorDetail = await commentResponse.json();
         console.error('Error adding comment to post:', errorDetail);
+        alert('Error adding comment: ' + JSON.stringify(errorDetail.errors || 'Unknown error'));
         throw new Error('Error adding comment to post');
       }
 
       const createdComment = await commentResponse.json();
-
       setNewPost((prevPost) => {
         const comments = Array.isArray(prevPost.comments) ? prevPost.comments : [];
         return {
@@ -80,12 +90,13 @@ const CreatePost = () => {
       });
 
       alert('Post and comment created successfully');
-            navigate('/');
 
-      setPost({ title: '', body: '' });
+      // Reset form fields
+      setPost({ title: '', body: '', userId: '' });
       setComment({ commentText: '', author: '' });
     } catch (error) {
       console.error('Error:', error);
+      alert('An error occurred while creating the post or comment.');
     }
   };
 
@@ -93,6 +104,16 @@ const CreatePost = () => {
     <div>
       <h2>Create New Post</h2>
       <form onSubmit={handleSubmit}>
+        <div>
+          <label>User ID:</label>
+          <input
+            type="number"
+            name="userId"
+            value={post.userId}
+            onChange={handlePostInputChange}
+            required
+          />
+        </div>
         <div>
           <label>Title:</label>
           <input
@@ -138,23 +159,18 @@ const CreatePost = () => {
 
       {newPost && (
         <div>
-          <h3>Created Post</h3>
+          <h2>Created Post</h2>
           <p><strong>Title:</strong> {newPost.title}</p>
-          <p><strong>Body:</strong> {newPost.body}</p>
-
-          <h4>Comments</h4>
-          {newPost.comments.length > 0 ? (
-            <ul>
-              {newPost.comments.map((comment, index) => (
-                <li key={index}>
-                  <p><strong>Author:</strong> {comment.author}</p>
-                  <p><strong>Comment:</strong> {comment.commentText}</p>
-                  <p><strong>Created At:</strong> {new Date(comment.createdAt).toLocaleString()}</p>
-                </li>
-              ))}
-            </ul>
+          <p><strong>Content:</strong> {newPost.content}</p>
+          <h3>Comments:</h3>
+          {newPost.comments && newPost.comments.length > 0 ? (
+            newPost.comments.map((comment, index) => (
+              <div key={index}>
+                <p><strong>{comment.author}:</strong> {comment.content}</p>
+              </div>
+            ))
           ) : (
-            <p>No comments available.</p>
+            <p>No comments yet.</p>
           )}
         </div>
       )}

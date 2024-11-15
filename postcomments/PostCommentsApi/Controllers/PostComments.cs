@@ -52,15 +52,20 @@ namespace PostCommentsApi.Controllers
             return CreatedAtAction(nameof(GetPost), new { id = createdPost.Id }, createdPost);
         }
 
-     [HttpPost("user/{userId}")]
-public async Task<ActionResult<Post>> AddPost(int userId, [FromBody] Post post)
+[HttpPost("user/{userId}")]
+public async Task<ActionResult<Post>> AddPost(int userId, [FromBody] PostCreateDto postDto)
 {
-    if (post == null || string.IsNullOrWhiteSpace(post.Title) || string.IsNullOrWhiteSpace(post.Content))
+    if (string.IsNullOrWhiteSpace(postDto.Title) || string.IsNullOrWhiteSpace(postDto.Content))
     {
-        return BadRequest("Post title and content are required.");
+        return BadRequest(new { error = "Title and content are required." });
     }
 
-    post.UserId = userId;
+    var post = new Post
+    {
+        Title = postDto.Title,
+        Content = postDto.Content,
+        UserId = userId
+    };
 
     _context.Posts.Add(post);
     await _context.SaveChangesAsync();
@@ -69,26 +74,42 @@ public async Task<ActionResult<Post>> AddPost(int userId, [FromBody] Post post)
 }
 
 
+
         [HttpGet("{postId}/comments")]
         public async Task<ActionResult<IEnumerable<Comment>>> GetComments(int postId)
         {
             var comments = await _commentService.GetCommentsByPostIdAsync(postId);
             return Ok(comments);
         }
+[HttpPost("{postId}/comments")]
+public async Task<ActionResult<Comment>> AddComment(int postId, [FromBody] CommentCreateDto commentDto)
+{
+    // Validate the comment content and author
+    if (string.IsNullOrWhiteSpace(commentDto.Content) || string.IsNullOrWhiteSpace(commentDto.Author))
+    {
+        return BadRequest(new { error = "Content and author are required." });
+    }
 
-        [HttpPost("{postId}/comments")]
-        public async Task<ActionResult<Comment>> AddComment(int postId, Comment comment)
-        {
-            try
-            {
-                var createdComment = await _commentService.AddCommentAsync(postId, comment);
-                return CreatedAtAction(nameof(GetComments), new { postId = postId }, createdComment);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound("Post not found.");
-            }
-        }
+    var post = await _context.Posts.FindAsync(postId);
+    if (post == null)
+    {
+        return NotFound(new { error = "Post not found." });
+    }
+
+    var comment = new Comment
+    {
+        Content = commentDto.Content,
+        Author = commentDto.Author,
+        PostId = postId,  // Associate comment with the post
+        UserId = commentDto.UserId  // Associate comment with the user
+    };
+
+    _context.Comments.Add(comment);
+    await _context.SaveChangesAsync();
+
+    return CreatedAtAction(nameof(GetComments), new { postId = postId }, comment);
+}
+
 
       [HttpPost("login")]
 public async Task<ActionResult> Login([FromBody] LoginRequest loginRequest)
