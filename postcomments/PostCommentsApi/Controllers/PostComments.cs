@@ -84,7 +84,6 @@ namespace PostCommentsApi.Controllers
             return Ok(new { message = "Login successful" });
         }
 
-        // Register method for new users
         [HttpPost("register")]
         public async Task<ActionResult> Register([FromBody] RegisterRequest registerRequest)
         {
