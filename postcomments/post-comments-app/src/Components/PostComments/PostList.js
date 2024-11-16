@@ -1,70 +1,113 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
 
-function PostList() {
+function EditPost() {
   const [posts, setPosts] = useState([]);
   const [error, setError] = useState(null);
-  const userId = localStorage.getItem('userId'); // Retrieve userId from localStorage
+  const [editingPostId, setEditingPostId] = useState(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editContent, setEditContent] = useState("");
+
+  const userId = localStorage.getItem("userId")  
 
   useEffect(() => {
     if (!userId) {
-      setError('User is not logged in.');
+      setError("User is not logged in or userId is invalid.");
       return;
     }
 
     axios
       .get(`http://localhost:5041/api/PostComments/user/${userId}`)
-      .then(response => {
-        console.log('API Response:', response.data); // Debug the response structure
-
+      .then((response) => {
         if (response.data && Array.isArray(response.data.$values)) {
-          const filteredPosts = response.data.$values.map(post => {
+          const postsData = response.data.$values.map((post) => {
             const { $id, comments, ...postData } = post;
-
-            const postComments = comments && comments.$values
-              ? comments.$values.map(comment => {
-                  const { $id, ...commentData } = comment;
-                  return commentData; 
-                })
-              : [];
-
-            return {
-              ...postData,
-              comments: postComments 
-            };
+            return postData;
           });
-
-          setPosts(filteredPosts);
+          setPosts(postsData);
         } else {
-          setError('Unexpected API response format.');
+          setError("Unexpected API response format.");
         }
       })
-      .catch(error => {
-        console.error('Error fetching posts:', error);
-        setError('Failed to fetch posts for the logged-in user.');
+      .catch((error) => {
+        console.error("Error fetching posts:", error);
+        setError("Failed to fetch posts.");
       });
   }, [userId]);
 
+  const handleEdit = (post) => {
+    setEditingPostId(post.id);
+    setEditTitle(post.title);
+    setEditContent(post.content);
+  };
+
+  const handleSave = async () => {
+    if (!editTitle.trim() || !editContent.trim()) {
+      alert("Both title and content are required.");
+      return;
+    }
+
+    try {
+      const response = await axios.put(
+        `http://localhost:5041/api/PostComments/user/${userId}/post/${editingPostId}`,
+        { title: editTitle, content: editContent }
+      );
+
+      if (response.status === 200) {
+        const updatedPost = response.data;
+        setPosts((prevPosts) =>
+          prevPosts.map((post) =>
+            post.id === updatedPost.id ? { ...post, ...updatedPost } : post
+          )
+        );
+        setEditingPostId(null);
+        setEditTitle("");
+        setEditContent("");
+      } else {
+        alert("Failed to update the post.");
+      }
+    } catch (error) {
+      console.error("Error updating post:", error);
+      alert("An error occurred while updating the post.");
+    }
+  };
+
+  const handleCancel = () => {
+    setEditingPostId(null);
+    setEditTitle("");
+    setEditContent("");
+  };
+
   return (
     <div>
-      <h1>User Posts</h1>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <h1>Edit User Posts</h1>
+      {error && <p style={{ color: "red" }}>{error}</p>}
       <ul>
-        {posts.map(post => (
+        {posts.map((post) => (
           <li key={post.id}>
-            <h2>{post.title}</h2>
-            <p>{post.content}</p>
-            {post.comments && post.comments.length > 0 && (
+            {editingPostId === post.id ? (
               <div>
-                <h3>Comments:</h3>
-                <ul>
-                  {post.comments.map(comment => (
-                    <li key={comment.id}>
-                      <p><strong>{comment.author}</strong>: {comment.content}</p>
-                    </li>
-                  ))}
-                </ul>
+                <input
+                  type="text"
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  placeholder="Edit title"
+                />
+                <textarea
+                  value={editContent}
+                  onChange={(e) => setEditContent(e.target.value)}
+                  placeholder="Edit content"
+                  rows={4}
+                  cols={50}
+                ></textarea>
+                <button onClick={handleSave}>Save</button>
+                <button onClick={handleCancel}>Cancel</button>
+              </div>
+            ) : (
+              <div>
+                <h2>{post.title}</h2>
+                <p>{post.content}</p>
+                <button onClick={() => handleEdit(post)}>Edit Post</button>
               </div>
             )}
           </li>
@@ -74,4 +117,4 @@ function PostList() {
   );
 }
 
-export default PostList;
+export default EditPost;

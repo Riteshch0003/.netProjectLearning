@@ -10,10 +10,8 @@ import CreatePost from '../PostComments/CreatePost';
 const AppRoutes = () => {
   return (
     <div className="flex">
-      {/* MenuBar */}
      
 
-      {/* Main Content and Routes */}
       <div className="ml-64 flex-1 p-6">
         <Routes>
           <Route path="/" element={<Home/>} />

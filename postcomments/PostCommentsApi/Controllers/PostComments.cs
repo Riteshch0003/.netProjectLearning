@@ -74,15 +74,15 @@ public async Task<ActionResult<Post>> AddPost(int userId, [FromBody] PostCreateD
     return CreatedAtAction(nameof(GetPost), new { id = post.Id }, post);
 }
 
-
-
-        [HttpGet("{postId}/comments")]
+         [HttpGet("{postId}/comments")]
         public async Task<ActionResult<IEnumerable<Comment>>> GetComments(int postId)
         {
             var comments = await _commentService.GetCommentsByPostIdAsync(postId);
             return Ok(comments);
         }
-[HttpPost("{postId}/comments")]
+
+        
+        [HttpPost("{postId}/comments")]
 public async Task<ActionResult<Comment>> AddComment(int postId, [FromBody] CommentCreateDto commentDto)
 {
     if (string.IsNullOrWhiteSpace(commentDto.Content) || string.IsNullOrWhiteSpace(commentDto.Author))
@@ -100,8 +100,8 @@ public async Task<ActionResult<Comment>> AddComment(int postId, [FromBody] Comme
     {
         Content = commentDto.Content,
         Author = commentDto.Author,
-        PostId = postId,  // Associate comment with the post
-        UserId = commentDto.UserId  // Associate comment with the user
+        PostId = postId,  
+        UserId = commentDto.UserId  
     };
 
     _context.Comments.Add(comment);
@@ -120,7 +120,6 @@ public async Task<ActionResult> Login([FromBody] LoginRequest loginRequest)
         return Unauthorized(new { message = "Invalid credentials" });
     }
 
-    // Return the userId along with a success message
     return Ok(new { userId = user.Id, message = "Login successful" });
 }
 
@@ -188,14 +187,12 @@ public async Task<ActionResult<Post>> EditPost(int userId, int postId, [FromBody
         return BadRequest("Post title and content are required.");
     }
 
-    // Find the post and validate the user
     var existingPost = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId && p.UserId == userId);
     if (existingPost == null)
     {
         return NotFound($"Post with ID {postId} for User ID {userId} not found.");
     }
 
-    // Update post details
     existingPost.Title = updatedPostDto.Title;
     existingPost.Content = updatedPostDto.Content;
 
@@ -205,9 +202,7 @@ public async Task<ActionResult<Post>> EditPost(int userId, int postId, [FromBody
         return Ok(existingPost);
     }
     catch (Exception ex)
-    {
-        // Log the exception
-        return StatusCode(500, "An error occurred while updating the post.");
+    {        return StatusCode(500, "An error occurred while updating the post.");
     }
 }
 
@@ -219,14 +214,12 @@ public async Task<ActionResult<Comment>> EditComment(int postId, int commentId, 
         return BadRequest("Comment content is required.");
     }
 
-    // Find the comment and validate it belongs to the specified post
     var existingComment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == commentId && c.PostId == postId);
     if (existingComment == null)
     {
         return NotFound($"Comment with ID {commentId} for Post ID {postId} not found.");
     }
 
-    // Update comment details
     existingComment.Content = updatedCommentDto.Content;
 
     try
@@ -236,7 +229,6 @@ public async Task<ActionResult<Comment>> EditComment(int postId, int commentId, 
     }
     catch (Exception ex)
     {
-        // Log the exception
         return StatusCode(500, "An error occurred while updating the comment.");
     }
 }

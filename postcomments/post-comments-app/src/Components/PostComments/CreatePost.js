@@ -7,7 +7,7 @@ const CreatePost = () => {
   const [post, setPost] = useState({
     title: '',
     body: '',
-    userId: '', // New field for userId
+    userId: '', 
   });
 
   const [comment, setComment] = useState({
@@ -15,7 +15,7 @@ const CreatePost = () => {
     author: '',
   });
 
-  const [newPost, setNewPost] = useState(null); // Holds the created post and comment
+  const [newPost, setNewPost] = useState(null); 
 
   const handlePostInputChange = (e) => {
     const { name, value } = e.target;
@@ -31,7 +31,6 @@ const CreatePost = () => {
     e.preventDefault();
 
     try {
-      // Create Post request
       const postResponse = await fetch(`http://localhost:5041/api/PostComments/user/${post.userId}`, {
         method: 'POST',
         headers: {
@@ -40,7 +39,7 @@ const CreatePost = () => {
         body: JSON.stringify({
           Title: post.title,
           Content: post.body,
-          UserId: post.userId, // Sending userId along with post
+          UserId: post.userId, 
         }),
       });
 
@@ -54,12 +53,11 @@ const CreatePost = () => {
       const createdPost = await postResponse.json();
       setNewPost({ ...createdPost, comments: createdPost.comments || [] });
 
-      // Create Comment request
       const commentData = {
-        Content: comment.commentText, // Send the comment content
+        Content: comment.commentText, 
         Author: comment.author,
         PostId: createdPost.id,
-        UserId: post.userId, // Include UserId here as well
+        UserId: post.userId, 
       };
 
       const commentResponse = await fetch(
@@ -91,7 +89,6 @@ const CreatePost = () => {
 
       alert('Post and comment created successfully');
 
-      // Reset form fields
       setPost({ title: '', body: '', userId: '' });
       setComment({ commentText: '', author: '' });
     } catch (error) {

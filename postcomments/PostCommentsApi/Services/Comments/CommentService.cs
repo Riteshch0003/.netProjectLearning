@@ -56,17 +56,15 @@ public async Task<Comment> UpdateCommentAsync(int postId, int commentId, UpdateC
         throw new KeyNotFoundException($"Comment with ID {commentId} for Post ID {postId} not found.");
     }
 
-    // Update comment properties
     existingComment.Content = updatedCommentDto.Content;
 
     try
     {
-        await _context.SaveChangesAsync(); // Save changes to the database
+        await _context.SaveChangesAsync(); 
         return existingComment;
     }
     catch (Exception ex)
     {
-        // Log the exception (use a logger)
         throw new Exception("An error occurred while updating the comment.", ex);
     }
 }
