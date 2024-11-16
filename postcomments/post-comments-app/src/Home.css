@@ -1,0 +1,34 @@
+/* Home.css */
+
+.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .styled-table th, .styled-table td {
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #ddd;
+  }
+  
+  .styled-table th {
+    background-color: #4CAF50;
+    color: white;
+    font-weight: bold;
+  }
+  
+  .styled-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
+  .styled-table tr:hover {
+    background-color: #ddd;
+  }
+  
+  .styled-table td {
+    max-width: 200px;
+    word-wrap: break-word;
+  }
+  

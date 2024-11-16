@@ -7,6 +7,10 @@ import PostDetail from '../PostComments/PostDetails';
 import PostList from '../PostComments/PostList';
 import CreatePost from '../PostComments/CreatePost';
 
+
+
+
+
 const AppRoutes = () => {
   return (
     <div className="flex">

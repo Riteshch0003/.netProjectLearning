@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
 function PostDetail() {
-  const { id } = useParams(); // `id` corresponds to post ID
+  const { id } = useParams(); 
   const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
   const [error, setError] = useState(null);

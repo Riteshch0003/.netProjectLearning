@@ -4,6 +4,7 @@ namespace PostCommentsApi.Services
     public interface IPostService
     {
         Task<IEnumerable<Post>> GetPostsAsync();
+        Task<IEnumerable<PostDto>> GetAllPosts();
         Task<Post> GetPostByIdAsync(int id);
         Task<Post> CreatePostAsync(Post post);
         Task<IEnumerable<Post>> GetPostsByUserIdAsync(int userId);

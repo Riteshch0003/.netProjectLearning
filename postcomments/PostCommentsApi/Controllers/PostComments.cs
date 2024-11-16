@@ -29,12 +29,22 @@ namespace PostCommentsApi.Controllers
             _authService = authService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Post>>> GetPosts()
+       [HttpGet]
+    public async Task<ActionResult<IEnumerable<Post>>> GetPosts()
+    {
+        var posts = await _context.Posts.ToListAsync();
+        return Ok(posts);
+    }
+   [HttpGet("all")]  
+    public async Task<ActionResult<IEnumerable<PostDto>>> GetAllPosts()
+    {
+        var posts = await _postService.GetAllPosts();
+        if (posts == null || !posts.Any())
         {
-            var posts = await _postService.GetPostsAsync();
-            return Ok(posts);
+            return NotFound();
         }
+        return Ok(posts);
+    }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Post>> GetPost(int id)

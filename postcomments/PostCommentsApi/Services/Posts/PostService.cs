@@ -20,6 +20,20 @@ namespace PostCommentsApi.Services
             return await _context.Posts.Include(p => p.Comments).ToListAsync();
         }
 
+       public async Task<IEnumerable<PostDto>> GetAllPosts()
+{
+    // Fetching posts from the database
+    var posts = await _context.Posts
+                               .Select(post => new PostDto
+                               {
+                                   Title = post.Title,
+                                   Content = post.Content // Make sure this matches your model
+                               })
+                               .ToListAsync(); // Awaiting the database call
+
+    return posts;
+}
+
         public async Task<Post> GetPostByIdAsync(int id)
         {
             return await _context.Posts.Include(p => p.Comments)

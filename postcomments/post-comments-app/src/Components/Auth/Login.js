@@ -40,8 +40,7 @@ const Login = () => {
                 password,
             });
 
-            const { userId } = response.data; // Assuming the API returns userId on successful login
-
+            const { userId } = response.data; 
             localStorage.setItem('userId', userId);
 
             navigate(`/PostList`);

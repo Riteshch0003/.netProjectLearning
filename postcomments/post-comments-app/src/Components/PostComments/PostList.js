@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from 'react';
+// MyPosts.js
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-function EditPost() {
+const MyPosts = () => {
   const [posts, setPosts] = useState([]);
   const [error, setError] = useState(null);
   const [editingPostId, setEditingPostId] = useState(null);
   const [editTitle, setEditTitle] = useState("");
   const [editContent, setEditContent] = useState("");
 
-  const userId = localStorage.getItem("userId")  
+  const userId = localStorage.getItem("userId"); 
 
   useEffect(() => {
     if (!userId) {
@@ -20,11 +21,7 @@ function EditPost() {
       .get(`http://localhost:5041/api/PostComments/user/${userId}`)
       .then((response) => {
         if (response.data && Array.isArray(response.data.$values)) {
-          const postsData = response.data.$values.map((post) => {
-            const { $id, comments, ...postData } = post;
-            return postData;
-          });
-          setPosts(postsData);
+          setPosts(response.data.$values);
         } else {
           setError("Unexpected API response format.");
         }
@@ -79,42 +76,114 @@ function EditPost() {
   };
 
   return (
-    <div>
-      <h1>Edit User Posts</h1>
+    <div style={styles.container}>
+      <h1 style={styles.header}>My Posts</h1>
       {error && <p style={{ color: "red" }}>{error}</p>}
-      <ul>
-        {posts.map((post) => (
-          <li key={post.id}>
-            {editingPostId === post.id ? (
-              <div>
-                <input
-                  type="text"
-                  value={editTitle}
-                  onChange={(e) => setEditTitle(e.target.value)}
-                  placeholder="Edit title"
-                />
-                <textarea
-                  value={editContent}
-                  onChange={(e) => setEditContent(e.target.value)}
-                  placeholder="Edit content"
-                  rows={4}
-                  cols={50}
-                ></textarea>
-                <button onClick={handleSave}>Save</button>
-                <button onClick={handleCancel}>Cancel</button>
-              </div>
-            ) : (
-              <div>
-                <h2>{post.title}</h2>
-                <p>{post.content}</p>
-                <button onClick={() => handleEdit(post)}>Edit Post</button>
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
+      {posts.length === 0 ? (
+        <p>You don't have any posts yet.</p>
+      ) : (
+        <ul style={styles.postsList}>
+          {posts.map((post) => (
+            <li key={post.id} style={styles.postItem}>
+              {editingPostId === post.id ? (
+                <div>
+                  <input
+                    type="text"
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    placeholder="Edit title"
+                    style={styles.input}
+                  />
+                  <textarea
+                    value={editContent}
+                    onChange={(e) => setEditContent(e.target.value)}
+                    placeholder="Edit content"
+                    rows={4}
+                    cols={50}
+                    style={styles.textarea}
+                  ></textarea>
+                  <button onClick={handleSave} style={styles.button}>
+                    Save
+                  </button>
+                  <button onClick={handleCancel} style={styles.button}>
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  <h2 style={styles.postTitle}>{post.title}</h2>
+                  <p style={styles.postContent}>{post.content}</p>
+                  <button
+                    onClick={() => handleEdit(post)}
+                    style={styles.button}
+                  >
+                    Edit Post
+                  </button>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
-}
+};
 
-export default EditPost;
+const styles = {
+  container: {
+    padding: '20px',
+    backgroundColor: '#f8f9fa',
+    borderRadius: '8px',
+    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+  },
+  header: {
+    fontSize: '2rem',
+    marginBottom: '20px',
+    textAlign: 'center',
+  },
+  postsList: {
+    listStyleType: 'none',
+    padding: 0,
+  },
+  postItem: {
+    marginBottom: '20px',
+    padding: '10px',
+    border: '1px solid #ddd',
+    borderRadius: '4px',
+    backgroundColor: '#fff',
+  },
+  postTitle: {
+    fontSize: '1.5rem',
+    color: '#333',
+  },
+  postContent: {
+    fontSize: '1rem',
+    color: '#666',
+  },
+  input: {
+    width: '100%',
+    padding: '10px',
+    borderRadius: '4px',
+    border: '1px solid #ccc',
+    marginBottom: '10px',
+  },
+  textarea: {
+    width: '100%',
+    height: '150px',
+    padding: '10px',
+    borderRadius: '4px',
+    border: '1px solid #ccc',
+    marginBottom: '10px',
+  },
+  button: {
+    backgroundColor: '#4CAF50',
+    color: 'white',
+    padding: '10px 15px',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    marginRight: '10px',
+  },
+};
+
+export default MyPosts;
