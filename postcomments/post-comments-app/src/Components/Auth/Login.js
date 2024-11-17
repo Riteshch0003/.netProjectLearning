@@ -6,77 +6,57 @@ const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
-    const [emailError, setEmailError] = useState('');
-    const [passwordError, setPasswordError] = useState('');
     const navigate = useNavigate();
 
-    const validate = () => {
-        let isValid = true;
-        setEmailError('');
-        setPasswordError('');
-
-        if (!email) {
-            setEmailError('Email is required');
-            isValid = false;
-        }
-        if (!password) {
-            setPasswordError('Password is required');
-            isValid = false;
-        }
-
-        return isValid;
-    };
-
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-
-        if (!validate()) {
-            return;
-        }
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
         try {
+            // Send login request to the backend API
             const response = await axios.post('http://localhost:5041/api/PostComments/login', {
                 email,
                 password,
             });
 
-            const { userId } = response.data; 
-            localStorage.setItem('userId', userId);
-
-            navigate(`/PostList`);
+            // On success, store the JWT token in localStorage
+            if (response.status === 200) {
+                localStorage.setItem('token', response.data.token);
+                navigate('/my-posts'); // Redirect to posts page after login
+            }
         } catch (err) {
-            setError('Login failed. Please check your credentials.');
+            // Handle login error (invalid credentials, etc.)
+            if (err.response && err.response.status === 401) {
+                setError('Invalid email or password.');
+            } else {
+                setError('An unexpected error occurred.');
+            }
         }
     };
 
     return (
-        <div style={{ maxWidth: '400px', margin: 'auto', padding: '1em' }}>
+        <div className="login-container">
             <h2>Login</h2>
             <form onSubmit={handleSubmit}>
-                <div style={{ marginBottom: '1em' }}>
+                <div>
                     <label>Email</label>
-                    <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        style={{ width: '100%', padding: '0.5em', marginTop: '0.5em' }}
+                    <input 
+                        type="email" 
+                        value={email} 
+                        onChange={(e) => setEmail(e.target.value)} 
+                        required 
                     />
-                    {emailError && <p style={{ color: 'red' }}>{emailError}</p>}
                 </div>
-                <div style={{ marginBottom: '1em' }}>
+                <div>
                     <label>Password</label>
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                        style={{ width: '100%', padding: '0.5em', marginTop: '0.5em' }}
+                    <input 
+                        type="password" 
+                        value={password} 
+                        onChange={(e) => setPassword(e.target.value)} 
+                        required 
                     />
-                    {passwordError && <p style={{ color: 'red' }}>{passwordError}</p>}
                 </div>
-                {error && <p style={{ color: 'red' }}>{error}</p>}
-                <button type="submit" style={{ padding: '0.5em', width: '100%' }}>Login</button>
+                {error && <div style={{ color: 'red' }}>{error}</div>}
+                <button type="submit">Login</button>
             </form>
         </div>
     );

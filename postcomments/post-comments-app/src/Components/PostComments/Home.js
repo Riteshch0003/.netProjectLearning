@@ -6,16 +6,24 @@ const Home = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:5041/api/PostComments/all')
-      .then(response => response.json())
-      .then(data => {
-        setPosts(data.$values); 
+    const fetchPosts = async () => {
+      try {
+        const response = await fetch('http://localhost:5041/api/PostComments/all');
+
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        setPosts(data.$values || []);
         setLoading(false);
-      })
-      .catch(err => {
+      } catch (err) {
         setError(err);
         setLoading(false);
-      });
+      }
+    };
+
+    fetchPosts();
   }, []);
 
   if (loading) {
@@ -29,7 +37,6 @@ const Home = () => {
   return (
     <div style={styles.homeContainer}>
       <h1 style={styles.pageTitle}>All Posts</h1>
-
       {posts.length === 0 ? (
         <p style={styles.noPosts}>No posts available.</p>
       ) : (
@@ -42,7 +49,7 @@ const Home = () => {
               </tr>
             </thead>
             <tbody>
-              {posts.map(post => (
+              {posts.map((post) => (
                 <tr key={post.$id} style={styles.tableRow}>
                   <td style={styles.tableCell}>{post.title}</td>
                   <td style={styles.tableCell}>{post.content}</td>
@@ -131,11 +138,5 @@ const styles = {
     marginTop: '20px',
   },
 };
-
-document.styleSheets[0].insertRule(`
-  .styled-table tr:hover {
-    background-color: #f1f1f1;
-  }
-`, document.styleSheets[0].cssRules.length);
 
 export default Home;

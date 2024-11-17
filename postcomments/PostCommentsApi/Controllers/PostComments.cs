@@ -41,7 +41,7 @@ namespace PostCommentsApi.Controllers
             var posts = await _context.Posts.ToListAsync();
             return Ok(posts);
         }
-
+        [AllowAnonymous]
         [HttpGet("all")]
         public async Task<ActionResult<IEnumerable<PostDto>>> GetAllPosts()
         {
@@ -130,7 +130,6 @@ namespace PostCommentsApi.Controllers
 [AllowAnonymous]
 public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
 {
-    // Log the request details
     Console.WriteLine($"[Login] Received login request for email: {loginRequest.Email}");
 
     if (string.IsNullOrEmpty(loginRequest.Email) || string.IsNullOrEmpty(loginRequest.Password))
@@ -312,6 +311,7 @@ private string GenerateJwtToken(User user)
 
     public class RegisterRequest
     {
+        public string UserId { get; set; } 
         public string Username { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
