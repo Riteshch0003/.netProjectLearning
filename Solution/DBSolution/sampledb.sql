@@ -1,25 +1,30 @@
 -- Insert sample data into Users table
 
-INSERT INTO Users (Username, Password, Email) VALUES
-('Alice', 'password_1', 'alice@example.com'),
-('Bob', 'password_2', 'bob@example.com'),
-('Charlie', 'password_3', 'charlie@example.com'),
-('Daisy', 'password_4', 'daisy@example.com'),
-('Edward', 'password_5', 'edward@example.com'),
-('Fiona', 'password_6', 'fiona@example.com');
+-- INSERT INTO Users (Username, Password, Email) VALUES
+-- ('Ananya', 'hashed_password1', 'ananya@example.com'),
+-- ('Ajinkya', 'hashed_password2', 'ajinkya@example.com'),
+-- ('Ritesh', 'hashed_password3', 'ritesh@example.com'),
+-- ('Arjun', 'hashed_password4', 'arjun@example.com'),
+-- ('Priya', 'hashed_password5', 'priya@example.com'),
+-- ('Aditya', 'hashed_password6', 'aditya@example.com'),
+-- ('Neha', 'hashed_password7', 'neha@example.com'),
+-- ('Rutuja', 'hashed_password8', 'rutuja@example.com');
+
 
 
 INSERT INTO Posts (Title, Content, UserId) VALUES
-('First Post', 'This is the content of the first post.', 1),
-('Second Post', 'Here is the second post content.', 2),
-('Another Post by John', 'John’s additional post content.', 1),
-('Alice’s First Post', 'Content for Alice’s first post.', 3);
+('Startup Insights', 'This post shares insights on how to bootstrap a startup effectively.', 1),
+('Travel Diaries', 'My experience exploring the Himalayan trails.', 2),
+('Cricket: Game Strategy', 'An analysis of India’s performance in the last ODI series.', 3),
+('Spicy Indian Recipes', 'Authentic recipes for popular Indian dishes like Biryani and Butter Chicken.', 4);
 
 
-INSERT INTO Comments (PostId, UserId, Author, Content) VALUES
-    (1, 1, 'Alice', 'Great post! Really enjoyed reading it.'),
-    (1, 2, 'Bob', 'I have a few questions about this post.'),
-    (2, 3, 'Charlie', 'This post was very informative, thanks!'),
-    (2, 4, 'Daisy', 'Could you provide more details on this topic?'),
-    (3, 5, 'Edward', 'I disagree with some points made in this post.'),
-    (3, 6, 'Fiona', 'Interesting perspective, thanks for sharing!');
+INSERT INTO Comments (PostId, UserId, Content) VALUES
+    (1, 1, 'This was super helpful! Can you elaborate on funding sources?'),
+    (1, 2, 'Loved this! Especially the part about market research.'),
+    (2, 3, 'I’ve been to the Himalayas too. Your tips were spot on!'),
+    (2, 4, 'Planning my trek next month. Thanks for sharing this.'),
+    (3, 5, 'Great analysis! Do you think the team should have tried a different bowling strategy?'),
+    (3, 6, 'I think fielding was the real issue in that match.'),
+    (4, 7, 'This Butter Chicken recipe turned out amazing! Thanks.'),
+    (4, 8, 'Loved the Biryani recipe. Can you share more vegetarian options?');
