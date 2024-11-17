@@ -126,23 +126,41 @@ namespace PostCommentsApi.Controllers
             return CreatedAtAction(nameof(GetComments), new { postId = postId }, comment);
         }
 
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
-        {
-            var secretKey = _configuration["Jwt:Key"]; 
-            var issuer = _configuration["Jwt:Issuer"]; 
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == loginRequest.Email && u.Password == loginRequest.Password);
+[HttpPost("login")]
+[AllowAnonymous]
+public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
+{
+    // Log the request details
+    Console.WriteLine($"[Login] Received login request for email: {loginRequest.Email}");
 
-            if (user == null)
-            {
-                return Unauthorized(new { message = "Invalid email or password" });
-            }
+    if (string.IsNullOrEmpty(loginRequest.Email) || string.IsNullOrEmpty(loginRequest.Password))
+    {
+        Console.WriteLine("[Login] Email or password is missing.");
+        return BadRequest("Email and password are required.");
+    }
 
-            var token = GenerateJwtToken(user, secretKey, issuer);
-            
-            return Ok(new { message = "Login successful", token });
-        }
+    // Try to authenticate the user
+    var user = await _authService.AuthenticateAsync(loginRequest.Email, loginRequest.Password);
+
+    if (user == null)
+    {
+        Console.WriteLine($"[Login] Authentication failed for email: {loginRequest.Email}");
+        return Unauthorized(new { message = "Invalid email or password" });
+    }
+
+    // Log the successful user authentication
+    Console.WriteLine($"[Login] User authenticated: {user.Email}");
+
+    // Generate the JWT token
+    var token = _authService.GenerateJwtToken(user);
+    Console.WriteLine("[Login] JWT token generated for user: " + user.Email);
+
+    return Ok(new { message = "Login successful", token });
+}
+
+
+
+
 
         [HttpPost("logout")]
         public IActionResult Logout()
@@ -151,29 +169,32 @@ namespace PostCommentsApi.Controllers
         }
 
         // Helper method to generate JWT token
-        private string GenerateJwtToken(User user, string secretKey, string issuer)
-        {
-            var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.Name, user.Username),
-            };
+    // This method generates a JWT token for the authenticated user.
+private string GenerateJwtToken(User user)
+{
+    var claims = new List<Claim>
+    {
+        new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+        new Claim(ClaimTypes.Name, user.Username),
+    };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)); 
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256); 
-            var token = new JwtSecurityToken(
-                issuer: issuer,
-                audience: issuer, 
-                claims: claims,
-                expires: DateTime.Now.AddHours(1),
-                signingCredentials: creds
-            );
+    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ThisIsASecretKeyForJwtAuthenticationThatIsLongEnough123"));
+    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+    var token = new JwtSecurityToken(
+        issuer: "PostCommentsApi",
+        audience: "PostCommentsApi",
+        claims: claims,
+        expires: DateTime.Now.AddHours(1),
+        signingCredentials: creds
+    );
 
-            return new JwtSecurityTokenHandler().WriteToken(token); 
-        }
+    return new JwtSecurityTokenHandler().WriteToken(token);
+}
+
 
         [HttpPost("register")]
+        [AllowAnonymous]
         public async Task<ActionResult> Register([FromBody] RegisterRequest registerRequest)
         {
             if (string.IsNullOrEmpty(registerRequest.Email) || 

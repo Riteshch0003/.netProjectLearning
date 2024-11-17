@@ -6,9 +6,12 @@ using System.Text.Json.Serialization;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
-
-
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure logging here
+builder.Logging.ClearProviders();  // Clear existing logging providers
+builder.Logging.AddConsole();      // Add console logging
+builder.Logging.AddDebug();        // Optionally add debug logging
 
 // Add services to the container
 builder.Services.AddControllers().AddJsonOptions(options =>
@@ -57,11 +60,32 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"], // From appsettings.json
-        ValidAudience = builder.Configuration["Jwt:Audience"], // From appsettings.json
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])) // Secret Key
+        ValidIssuer = builder.Configuration["Jwt:Issuer"], 
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])) // Secret key
+    };
+
+    // Add a logging event for debugging token validation
+    options.Events = new JwtBearerEvents
+    {
+        OnAuthenticationFailed = context =>
+        {
+            Console.WriteLine("Authentication failed: " + context.Exception.Message);
+            return Task.CompletedTask;
+        },
+        OnTokenValidated = context =>
+        {
+            Console.WriteLine("Token validated successfully");
+            return Task.CompletedTask;
+        },
+        OnChallenge = context =>
+        {
+            Console.WriteLine("Challenge triggered: " + context.Error);
+            return Task.CompletedTask;
+        }
     };
 });
+
 
 var app = builder.Build();
 

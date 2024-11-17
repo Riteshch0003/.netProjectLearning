@@ -8,5 +8,6 @@ namespace PostCommentsApi.Services
         Task<User> AuthenticateAsync(string email, string password);  
         Task<User> RegisterAsync(string username, string email, string password);  
         Task<bool> ValidateUserExistsAsync(string username, string email);  
+        string GenerateJwtToken(User user);
     }
 }
