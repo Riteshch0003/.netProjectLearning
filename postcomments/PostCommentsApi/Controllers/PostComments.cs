@@ -154,7 +154,7 @@ public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
     var token = _authService.GenerateJwtToken(user);
     Console.WriteLine("[Login] JWT token generated for user: " + user.Email);
 
-    return Ok(new { message = "Login successful", token });
+    return Ok(new { message = "Login successful", token,userId = user.Id });
 }
 
 
@@ -172,7 +172,8 @@ public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
 private string GenerateJwtToken(User user)
 {
     var claims = new List<Claim>
-    {
+    {   
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
         new Claim(JwtRegisteredClaimNames.Sub, user.Email),
         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         new Claim(ClaimTypes.Name, user.Username),
@@ -311,7 +312,6 @@ private string GenerateJwtToken(User user)
 
     public class RegisterRequest
     {
-        public string UserId { get; set; } 
         public string Username { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }

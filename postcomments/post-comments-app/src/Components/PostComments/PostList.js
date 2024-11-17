@@ -7,24 +7,32 @@ const MyPosts = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-
-    if (!token) {
+    const userId = localStorage.getItem("userId"); // Assuming userId is stored in localStorage
+    console.log(token);
+    console.log(userId);
+  
+    if (!token || !userId) {
       setError("Unauthorized. Please log in.");
       return;
     }
-
+  
     axios
-      .get("http://localhost:5041/api/PostComments/user/myposts", {
+      .get(`http://localhost:5041/api/PostComments/user/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((response) => {
-        setPosts(response.data);
+        console.log(response.data); // Log the response for debugging
+  
+        // Access the posts from the $values property
+        const postsData = response.data.$values || [];
+        setPosts(postsData);
       })
       .catch((err) => {
+        console.error(err); // Log the error for debugging
         setError("Failed to fetch posts.");
       });
   }, []);
-
+  
   if (error) {
     return <div>{error}</div>;
   }

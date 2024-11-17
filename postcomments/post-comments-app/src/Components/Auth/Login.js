@@ -7,21 +7,21 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
     const navigate = useNavigate();
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         try {
             // Send login request to the backend API
             const response = await axios.post('http://localhost:5041/api/PostComments/login', {
                 email,
                 password,
             });
-
-            // On success, store the JWT token in localStorage
+    
+            // On success, store the JWT token and userId in localStorage
             if (response.status === 200) {
-                localStorage.setItem('token', response.data.token);
-                navigate('/my-posts'); // Redirect to posts page after login
+                localStorage.setItem('token', response.data.token); // Store token
+                localStorage.setItem('userId', response.data.userId); // Store userId
+                navigate('/postlist'); // Redirect to posts page after login
             }
         } catch (err) {
             // Handle login error (invalid credentials, etc.)
@@ -32,6 +32,7 @@ const Login = () => {
             }
         }
     };
+    
 
     return (
         <div className="login-container">

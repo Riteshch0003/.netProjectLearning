@@ -4,8 +4,8 @@ import Login from '../Auth/Login';
 import Register from '../Auth/Register';
 import Home from '../PostComments/Home';
 import PostDetail from '../PostComments/PostDetails';
-import PostList from '../PostComments/PostList';
 import CreatePost from '../PostComments/CreatePost';
+import MyPosts from '../PostComments/PostList';
 
 
 
@@ -23,7 +23,7 @@ const AppRoutes = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/createpost" element={<CreatePost />} />
           <Route path="/posts/:id" element={<PostDetail />} />
-          <Route path="/postlist" element={<PostList/>} />
+          <Route path="/postlist" element={<MyPosts/>} />
         </Routes>
       </div>
     </div>
