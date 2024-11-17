@@ -9,7 +9,7 @@ const Home = () => {
     fetch('http://localhost:5041/api/PostComments/all')
       .then(response => response.json())
       .then(data => {
-        setPosts(data.$values);  // Store posts in state
+        setPosts(data.$values); 
         setLoading(false);
       })
       .catch(err => {
@@ -132,7 +132,6 @@ const styles = {
   },
 };
 
-// Hover effect for table row
 document.styleSheets[0].insertRule(`
   .styled-table tr:hover {
     background-color: #f1f1f1;

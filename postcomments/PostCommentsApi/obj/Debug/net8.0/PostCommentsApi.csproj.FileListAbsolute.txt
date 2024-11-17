@@ -738,3 +738,4 @@ C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\runtimes\un
 C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll
 C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
 C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
+C:\.netProjectLearning\postcomments\PostCommentsApi\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
