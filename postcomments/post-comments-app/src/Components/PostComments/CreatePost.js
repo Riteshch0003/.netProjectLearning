@@ -31,7 +31,15 @@ const CreatePost = () => {
     e.preventDefault();
 
     try {
-      const postResponse = await fetch(`http://localhost:5041/api/PostComments/user/${post.userId}`, {
+      // Get the userId from localStorage (for the logged-in user)
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        alert('You need to log in to create a post.');
+        return;
+      }
+
+      // Save the post
+      const postResponse = await fetch(`http://localhost:5041/api/PostComments/user/${userId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -39,7 +47,7 @@ const CreatePost = () => {
         body: JSON.stringify({
           Title: post.title,
           Content: post.body,
-          UserId: post.userId, 
+          UserId: userId, 
         }),
       });
 
@@ -53,11 +61,12 @@ const CreatePost = () => {
       const createdPost = await postResponse.json();
       setNewPost({ ...createdPost, comments: createdPost.comments || [] });
 
+      // Save the comment for the post
       const commentData = {
         Content: comment.commentText, 
         Author: comment.author,
         PostId: createdPost.id,
-        UserId: post.userId, 
+        UserId: userId, 
       };
 
       const commentResponse = await fetch(
@@ -89,8 +98,12 @@ const CreatePost = () => {
 
       alert('Post and comment created successfully');
 
+      // Reset the form after successful submission
       setPost({ title: '', body: '', userId: '' });
       setComment({ commentText: '', author: '' });
+
+      // Optionally redirect to the post list or detail page
+      navigate('/postlist'); // Redirect to the Post List page
     } catch (error) {
       console.error('Error:', error);
       alert('An error occurred while creating the post or comment.');

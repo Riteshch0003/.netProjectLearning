@@ -29,45 +29,45 @@ namespace PostCommentsApi.Services
             return comment;
         }
 
-        
+
         public async Task<IEnumerable<Comment>> GetCommentsByPostIdAsync(int postId)
         {
             return await _context.Comments
                                  .Where(c => c.PostId == postId)
                                  .ToListAsync();
         }
-        public async Task<IEnumerable<Comment>>GetCommentsByUserIdAsync(int userId){
+        public async Task<IEnumerable<Comment>> GetCommentsByUserIdAsync(int userId)
+        {
             return await _context.Comments
-            .Where(c=>c.UserId == userId)
+            .Where(c => c.UserId == userId)
             .ToListAsync();
         }
 
 
-public async Task<Comment> UpdateCommentAsync(int postId, int commentId, UpdateCommentDto updatedCommentDto)
-{
-    if (updatedCommentDto == null || string.IsNullOrWhiteSpace(updatedCommentDto.Content))
-    {
-        throw new ArgumentException("Comment content is required.");
-    }
+        public async Task<Comment> UpdateCommentAsync(int postId, int commentId, UpdateCommentDto updatedCommentDto)
+        {
+            if (updatedCommentDto == null || string.IsNullOrWhiteSpace(updatedCommentDto.Content))
+            {
+                throw new ArgumentException("Comment content is required.");
+            }
 
-    var existingComment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == commentId && c.PostId == postId);
-    if (existingComment == null)
-    {
-        throw new KeyNotFoundException($"Comment with ID {commentId} for Post ID {postId} not found.");
-    }
+            var existingComment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == commentId && c.PostId == postId);
+            if (existingComment == null)
+            {
+                throw new KeyNotFoundException($"Comment with ID {commentId} for Post ID {postId} not found.");
+            }
 
-    existingComment.Content = updatedCommentDto.Content;
+            existingComment.Content = updatedCommentDto.Content;
 
-    try
-    {
-        await _context.SaveChangesAsync(); 
-        return existingComment;
+            try
+            {
+                await _context.SaveChangesAsync();
+                return existingComment;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while updating the comment.", ex);
+            }
+        }
     }
-    catch (Exception ex)
-    {
-        throw new Exception("An error occurred while updating the comment.", ex);
-    }
-}
-
-}
 }

@@ -9,10 +9,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure logging here
-builder.Logging.ClearProviders();  // Clear existing logging providers
-builder.Logging.AddConsole();      // Add console logging
-builder.Logging.AddDebug();        // Optionally add debug logging
-
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
 // Add services to the container
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -60,7 +59,7 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"], 
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])) // Secret key
     };

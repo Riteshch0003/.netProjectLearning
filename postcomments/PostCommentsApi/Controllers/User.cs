@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace PostCommentsApi.Controllers
 {
-    [Authorize] 
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class PostCommentsController : ControllerBase
@@ -32,15 +32,16 @@ namespace PostCommentsApi.Controllers
             _postService = postService;
             _commentService = commentService;
             _authService = authService;
-            _configuration = configuration;  
+            _configuration = configuration;
         }
-
+       
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Post>>> GetPosts()
         {
             var posts = await _context.Posts.ToListAsync();
             return Ok(posts);
         }
+        // get all posts
         [AllowAnonymous]
         [HttpGet("all")]
         public async Task<ActionResult<IEnumerable<PostDto>>> GetAllPosts()
@@ -52,7 +53,7 @@ namespace PostCommentsApi.Controllers
             }
             return Ok(posts);
         }
-
+        // get posts according to the id 
         [HttpGet("{id}")]
         public async Task<ActionResult<Post>> GetPost(int id)
         {
@@ -69,7 +70,7 @@ namespace PostCommentsApi.Controllers
             var createdPost = await _postService.CreatePostAsync(post);
             return CreatedAtAction(nameof(GetPost), new { id = createdPost.Id }, createdPost);
         }
-
+        // add posts by the logged in user wants
         [HttpPost("user/{userId}")]
         public async Task<ActionResult<Post>> AddPost(int userId, [FromBody] PostCreateDto postDto)
         {
@@ -90,14 +91,14 @@ namespace PostCommentsApi.Controllers
 
             return CreatedAtAction(nameof(GetPost), new { id = post.Id }, post);
         }
-
+            // get all comments by the user if wats to
         [HttpGet("{postId}/comments")]
         public async Task<ActionResult<IEnumerable<Comment>>> GetComments(int postId)
         {
             var comments = await _commentService.GetCommentsByPostIdAsync(postId);
             return Ok(comments);
         }
-
+        // the comments being add by the user who is already logged in
         [HttpPost("{postId}/comments")]
         public async Task<ActionResult<Comment>> AddComment(int postId, [FromBody] CommentCreateDto commentDto)
         {
@@ -116,8 +117,8 @@ namespace PostCommentsApi.Controllers
             {
                 Content = commentDto.Content,
                 Author = commentDto.Author,
-                PostId = postId,  
-                UserId = commentDto.UserId  
+                PostId = postId,
+                UserId = commentDto.UserId
             };
 
             _context.Comments.Add(comment);
@@ -125,42 +126,39 @@ namespace PostCommentsApi.Controllers
 
             return CreatedAtAction(nameof(GetComments), new { postId = postId }, comment);
         }
+            // user login with jwt barear token 
+        [HttpPost("login")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
+        {
+            Console.WriteLine($"[Login] Received login request for email: {loginRequest.Email}");
 
-[HttpPost("login")]
-[AllowAnonymous]
-public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
-{
-    Console.WriteLine($"[Login] Received login request for email: {loginRequest.Email}");
+            if (string.IsNullOrEmpty(loginRequest.Email) || string.IsNullOrEmpty(loginRequest.Password))
+            {
+                Console.WriteLine("[Login] Email or password is missing.");
+                return BadRequest("Email and password are required.");
+            }
 
-    if (string.IsNullOrEmpty(loginRequest.Email) || string.IsNullOrEmpty(loginRequest.Password))
-    {
-        Console.WriteLine("[Login] Email or password is missing.");
-        return BadRequest("Email and password are required.");
-    }
+            // Try to authenticate the user
+            var user = await _authService.AuthenticateAsync(loginRequest.Email, loginRequest.Password);
 
-    // Try to authenticate the user
-    var user = await _authService.AuthenticateAsync(loginRequest.Email, loginRequest.Password);
+            if (user == null)
+            {
+                Console.WriteLine($"[Login] Authentication failed for email: {loginRequest.Email}");
+                return Unauthorized(new { message = "Invalid email or password" });
+            }
 
-    if (user == null)
-    {
-        Console.WriteLine($"[Login] Authentication failed for email: {loginRequest.Email}");
-        return Unauthorized(new { message = "Invalid email or password" });
-    }
+            // Log the successful user authentication
+            Console.WriteLine($"[Login] User authenticated: {user.Email}");
 
-    // Log the successful user authentication
-    Console.WriteLine($"[Login] User authenticated: {user.Email}");
+            // Generate the JWT token
+            var token = _authService.GenerateJwtToken(user);
+            Console.WriteLine("[Login] JWT token generated for user: " + user.Email);
 
-    // Generate the JWT token
-    var token = _authService.GenerateJwtToken(user);
-    Console.WriteLine("[Login] JWT token generated for user: " + user.Email);
+            return Ok(new { message = "Login successful", token, userId = user.Id });
+        }
 
-    return Ok(new { message = "Login successful", token,userId = user.Id });
-}
-
-
-
-
-
+        
         [HttpPost("logout")]
         public IActionResult Logout()
         {
@@ -168,37 +166,38 @@ public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         }
 
         // Helper method to generate JWT token
-    // This method generates a JWT token for the authenticated user.
-private string GenerateJwtToken(User user)
-{
-    var claims = new List<Claim>
-    {   
+        // This method generates a JWT token for the authenticated user.
+        private string GenerateJwtToken(User user)
+        {
+            var claims = new List<Claim>
+    {
         new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
         new Claim(JwtRegisteredClaimNames.Sub, user.Email),
         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         new Claim(ClaimTypes.Name, user.Username),
     };
 
-    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ThisIsASecretKeyForJwtAuthenticationThatIsLongEnough123"));
-    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-    var token = new JwtSecurityToken(
-        issuer: "PostCommentsApi",
-        audience: "PostCommentsApi",
-        claims: claims,
-        expires: DateTime.Now.AddHours(1),
-        signingCredentials: creds
-    );
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ThisIsASecretKeyForJwtAuthenticationThatIsLongEnough123"));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var token = new JwtSecurityToken(
+                issuer: "PostCommentsApi",
+                audience: "PostCommentsApi",
+                claims: claims,
+                expires: DateTime.Now.AddHours(1),
+                signingCredentials: creds
+            );
+            
+            return new JwtSecurityTokenHandler().WriteToken(token);
 
-    return new JwtSecurityTokenHandler().WriteToken(token);
-}
+        }
 
-
+            // register new user with hashed password
         [HttpPost("register")]
         [AllowAnonymous]
         public async Task<ActionResult> Register([FromBody] RegisterRequest registerRequest)
         {
-            if (string.IsNullOrEmpty(registerRequest.Email) || 
-                string.IsNullOrEmpty(registerRequest.Password) || 
+            if (string.IsNullOrEmpty(registerRequest.Email) ||
+                string.IsNullOrEmpty(registerRequest.Password) ||
                 string.IsNullOrEmpty(registerRequest.Username))
             {
                 return BadRequest("All fields are required.");
@@ -214,7 +213,7 @@ private string GenerateJwtToken(User user)
                 return Conflict(new { message = ex.Message });
             }
         }
-
+            // get posts of the logged user nd with comments they had done 
         [HttpGet("user/{userId}")]
         public async Task<ActionResult> GetPostsWithUserComments(int userId)
         {
@@ -247,7 +246,7 @@ private string GenerateJwtToken(User user)
 
             return Ok(response);
         }
-
+        // edit the posts if logged in user wants too 
         [HttpPut("user/{userId}/post/{postId}")]
         public async Task<ActionResult<Post>> EditPost(int userId, int postId, [FromBody] UpdatePostDto updatedPostDto)
         {
@@ -271,11 +270,11 @@ private string GenerateJwtToken(User user)
                 return Ok(existingPost);
             }
             catch (Exception ex)
-            {        
+            {
                 return StatusCode(500, "An error occurred while updating the post.");
             }
         }
-
+        
         [HttpPut("post/{postId}/comments/{commentId}")]
         public async Task<ActionResult<Comment>> EditComment(int postId, int commentId, [FromBody] UpdateCommentDto updatedCommentDto)
         {
